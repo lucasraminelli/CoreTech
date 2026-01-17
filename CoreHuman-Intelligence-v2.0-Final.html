@@ -1,0 +1,2081 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoreHuman Intelligence™ | Enterprise Edition v2.0</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        glass: { 
+                            100: 'rgba(255, 255, 255, 0.05)', 
+                            200: 'rgba(255, 255, 255, 0.1)', 
+                            300: 'rgba(255, 255, 255, 0.2)' 
+                        },
+                        brand: { 
+                            green: '#10B981', 
+                            cyan: '#06B6D4', 
+                            purple: '#8B5CF6', 
+                            red: '#EF4444', 
+                            dark: '#0F172A',
+                            yellow: '#F59E0B',
+                            blue: '#3B82F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            background: radial-gradient(circle at top left, #1e293b, #0f172a, #020617);
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .glass-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.6));
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(6, 182, 212, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #06B6D4, #3B82F6);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(6, 182, 212, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.2);
+            color: #e2e8f0;
+            padding: 10px 20px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.3);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            padding: 8px 16px;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #f1f5f9;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="range"],
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-family: inherit;
+        }
+
+        .form-group input[type="range"] {
+            padding: 0;
+            height: 6px;
+            cursor: pointer;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .radio-group {
+            margin: 15px 0;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+            font-weight: 400;
+        }
+
+        .radio-group input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fcd34d;
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .badge-info {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+        }
+
+        .kpi-card {
+            text-align: center;
+        }
+
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: #06b6d4;
+            margin: 10px 0;
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-trend {
+            font-size: 12px;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .trend-up { color: #10b981; }
+        .trend-down { color: #ef4444; }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #06b6d4, #3b82f6);
+            transition: width 0.3s ease;
+        }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dotted rgba(148, 163, 184, 0.5);
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 100;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        table th {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #cbd5e1;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        table tr:hover {
+            background: rgba(6, 182, 212, 0.05);
+        }
+
+        #onaCanvas {
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            cursor: crosshair;
+            margin: 20px 0;
+            display: block;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .ona-legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+
+        .ona-legend div {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .node-central {
+            width: 12px;
+            height: 12px;
+            background: #f59e0b;
+            border: 2px solid #fbbf24;
+            border-radius: 50%;
+        }
+
+        .node-broker {
+            width: 10px;
+            height: 10px;
+            background: #06b6d4;
+            border-radius: 50%;
+        }
+
+        .node-peripheral {
+            width: 8px;
+            height: 8px;
+            background: #64748b;
+            border-radius: 50%;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+        .hidden { display: none !important; }
+
+        .view { display: none; }
+        .view.active { display: block; }
+
+        .nav-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .nav-item:hover {
+            color: #cbd5e1;
+            background: rgba(6, 182, 212, 0.1);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(6, 182, 212, 0.15), transparent);
+            border-left-color: #06b6d4;
+            color: #22d3ee;
+        }
+
+        .pulse-question {
+            margin: 20px 0;
+        }
+
+        .pulse-question h4 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #f1f5f9;
+        }
+
+        .pulse-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .pulse-option {
+            padding: 12px;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pulse-option:hover {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(6, 182, 212, 0.5);
+        }
+
+        .pulse-option input {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .roi-option {
+            padding: 16px;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+        }
+
+        .roi-option:hover {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(6, 182, 212, 0.5);
+            transform: translateX(4px);
+        }
+
+        .roi-option h5 {
+            margin: 0 0 8px 0;
+            color: #f1f5f9;
+        }
+
+        .roi-option p {
+            margin: 4px 0;
+            font-size: 12px;
+            color: #cbd5e1;
+        }
+
+        .roi-success {
+            color: #10b981 !important;
+            font-weight: 600;
+        }
+
+        .tcwl-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            font-size: 14px;
+        }
+
+        .tcwl-row.tcwl-total {
+            font-weight: 700;
+            font-size: 16px;
+            background: rgba(6, 182, 212, 0.1);
+            border-top: 2px solid rgba(6, 182, 212, 0.3);
+        }
+
+        .tcwl-percent {
+            margin-top: 20px;
+            padding: 16px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 8px;
+        }
+
+        .tcwl-benchmark {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            justify-content: flex-end;
+        }
+
+        .step-indicator {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .step-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(148, 163, 184, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .step-dot.active {
+            background: #06b6d4;
+            width: 30px;
+            border-radius: 5px;
+        }
+
+        .bant-score-display {
+            font-size: 48px;
+            font-weight: 800;
+            color: #06b6d4;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .recommendation-box {
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .recommendation-go {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+        }
+
+        .recommendation-nurture {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #93c5fd;
+        }
+
+        .recommendation-explore {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #fcd34d;
+        }
+
+        .recommendation-pass {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            aside {
+                position: fixed;
+                left: -100%;
+                height: 100%;
+                z-index: 100;
+                width: 250px;
+                transition: left 0.3s ease;
+            }
+
+            aside.open {
+                left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                padding: 24px;
+                max-width: 95%;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            table th, table td {
+                padding: 8px;
+            }
+
+            #onaCanvas {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- MAIN LAYOUT -->
+    <div class="flex h-screen w-full">
+        <!-- SIDEBAR -->
+        <aside class="w-64 glass-panel z-20 flex flex-col justify-between shrink-0 overflow-y-auto">
+            <div>
+                <div class="h-20 flex items-center px-6 border-b border-white/5">
+                    <h1 class="text-xl font-bold text-brand-cyan">
+                        <i class="fas fa-brain"></i> CoreHuman
+                    </h1>
+                </div>
+
+                <nav class="mt-6 space-y-1 px-3">
+                    <div class="nav-item active" onclick="switchView('dashboard')">
+                        <i class="fas fa-chart-line w-5"></i>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="nav-item" onclick="switchView('risks')">
+                        <i class="fas fa-exclamation-circle w-5"></i>
+                        <span>Talentos em Risco</span>
+                    </div>
+                    <div class="nav-item" onclick="switchView('ona')">
+                        <i class="fas fa-project-diagram w-5"></i>
+                        <span>ONA Intelligence</span>
+                    </div>
+                    <div class="nav-item" onclick="switchView('tcwl')">
+                        <i class="fas fa-coins w-5"></i>
+                        <span>Auditoria TCWL</span>
+                    </div>
+                </nav>
+
+                <div class="mt-8 px-3 border-t border-white/5 pt-6 space-y-2">
+                    <div class="text-xs text-gray-500 px-3 mb-3">AÇÕES RÁPIDAS</div>
+                    <button onclick="openPulseModal()" class="w-full text-left nav-item hover:bg-blue-500/10">
+                        <i class="fas fa-poll w-5"></i>
+                        <span>Pulse Survey</span>
+                    </button>
+                    <button onclick="openTCWLModal()" class="w-full text-left nav-item hover:bg-yellow-500/10">
+                        <i class="fas fa-calculator w-5"></i>
+                        <span>TCWL Calc</span>
+                    </button>
+                    <button onclick="openBANTModal()" class="w-full text-left nav-item hover:bg-green-500/10">
+                        <i class="fas fa-star w-5"></i>
+                        <span>BANT Qualify</span>
+                    </button>
+                    <button onclick="exportPDF()" class="w-full text-left nav-item hover:bg-purple-500/10">
+                        <i class="fas fa-download w-5"></i>
+                        <span>Export PDF</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="px-3 pb-6 border-t border-white/5 pt-6">
+                <div class="text-xs text-gray-500 px-3 mb-3">BUILD INFO</div>
+                <div class="text-xs text-gray-600 px-3">
+                    <div>v2.0 Enterprise</div>
+                    <div>Live Data 🟢</div>
+                    <div class="mt-2">© 2025 MFGV</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- DASHBOARD VIEW -->
+            <div id="dashboard" class="view active p-6 md:p-8">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold mb-2">Dashboard Executivo</h2>
+                    <p class="text-gray-400">Monitoramento de Capital Humano em Tempo Real</p>
+                </div>
+
+                <!-- KPI ROW 1 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="glass-card p-6 kpi-card">
+                        <div class="kpi-label">
+                            <i class="fas fa-sign-out-alt"></i> Turnover Projetado
+                        </div>
+                        <div class="kpi-value" id="kpi-turnover">12%</div>
+                        <div class="kpi-trend trend-down">
+                            <i class="fas fa-arrow-down"></i> -2% vs. 6m
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 kpi-card">
+                        <div class="kpi-label">
+                            <i class="fas fa-fire"></i> Risco Burnout (Top)
+                        </div>
+                        <div class="kpi-value text-red-400">7 pessoas</div>
+                        <div class="kpi-trend trend-up">
+                            <i class="fas fa-arrow-up"></i> +15% vs. 6m
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 kpi-card">
+                        <div class="kpi-label tooltip" data-tooltip="TCWL (Total Cost of Workforce Loss) = Turnover + Desengajamento + Fricção + Absenteísmo">
+                            <i class="fas fa-money-bill"></i> TCWL (Perda Anual)
+                        </div>
+                        <div class="kpi-value" id="kpi-tcwl">R$ 3.31M</div>
+                        <div class="kpi-trend" style="color: #f59e0b;">
+                            43.9% da folha
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 kpi-card">
+                        <div class="kpi-label">
+                            <i class="fas fa-smile"></i> Índice eNPS (Employee Net Promoter Score)
+                        </div>
+                        <div class="kpi-value text-green-400">+42</div>
+                        <div class="kpi-trend trend-up">
+                            <i class="fas fa-arrow-up"></i> +8 vs. mês
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CHARTS ROW -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="glass-card p-6">
+                        <h3 class="text-lg font-bold mb-4">📊 Tendência de Engajamento (4 semanas)</h3>
+                        <div class="chart-container">
+                            <canvas id="engagementChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6">
+                        <h3 class="text-lg font-bold mb-4">🌡️ Distribuição de Burnout</h3>
+                        <div class="chart-container">
+                            <canvas id="burnoutChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6">
+                    <h3 class="text-lg font-bold mb-4">💰 Breakdown TCWL (Total Cost of Workforce Loss) </h3>
+                    <div class="chart-container">
+                        <canvas id="tcwlChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TALENTOS EM RISCO VIEW -->
+            <div id="risks" class="view p-6 md:p-8">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold mb-2">Talentos em Risco</h2>
+                    <p class="text-gray-400">Segmentação por Score de Saída (0-100%)</p>
+                </div>
+
+                <div class="glass-card p-6 mb-6">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                            <div class="text-sm text-gray-400">Crítico (>80%)</div>
+                            <div class="text-3xl font-bold text-red-400" id="risk-critical">7</div>
+                            <div class="text-xs text-red-600">Ação Urgente</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400">Alto (60-80%)</div>
+                            <div class="text-3xl font-bold text-yellow-400" id="risk-high">12</div>
+                            <div class="text-xs text-yellow-600">Monitor Próximo</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400">Médio (40-60%)</div>
+                            <div class="text-3xl font-bold text-blue-400" id="risk-medium">18</div>
+                            <div class="text-xs text-blue-600">Coaching</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400">Baixo (<40%)</div>
+                            <div class="text-3xl font-bold text-green-400" id="risk-low">8</div>
+                            <div class="text-xs text-green-600">Saudável</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 overflow-hidden">
+                    <h3 class="text-lg font-bold mb-4">🎯 Atenção: 15 Talentos em Risco</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Depto</th>
+                                    <th>Q12 Score</th>
+                                    <th>Risco Saída</th>
+                                    <th>Burnout</th>
+                                    <th>Custo Turnover</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="riskTable">
+                                <!-- Popula via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ONA VIEW -->
+            <div id="ona" class="view p-6 md:p-8">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold mb-2">🔗 Análise de Redes Organizacionais</h2>
+                    <p class="text-gray-400">Mapeamento de Influência e Interdependência</p>
+                </div>
+
+                <div class="glass-card p-6">
+                    <canvas id="onaCanvas" width="800" height="600"></canvas>
+
+                    <div class="ona-legend">
+                        <div><span class="node-central"></span> Central Connectors (>0.85)</div>
+                        <div><span class="node-broker"></span> Articuladores de Conhecimento (0.60-0.85)</div>
+                        <div><span class="node-peripheral"></span> Periféricos (<0.30)</div>
+                    </div>
+
+                    <div class="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                        <strong class="text-blue-300">💡 Insight:</strong>
+                        <p class="text-sm text-gray-300 mt-2" id="onaInsight">
+                            4 pessoas seguram 35% do valor de rede. Mariana Costa é conector crítico com baixo burnout (segura). 
+                            Fernando Silva é conector com alto risco de saída — mitigação urgente necessária.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 mt-6">
+                    <h3 class="text-lg font-bold mb-4">📊 Detalhe dos Conectores Centrais</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Dept</th>
+                                    <th>Centrality Score</th>
+                                    <th>Betweenness</th>
+                                    <th>Degree</th>
+                                    <th>Burnout</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="onaTable">
+                                <!-- Popula via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TCWL VIEW -->
+            <div id="tcwl" class="view p-6 md:p-8">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold mb-2">💰 Auditoria TCWL</h2>
+                    <p class="text-gray-400">Custo Total de Perda de Força de Trabalho — Quantificação de Vazamento</p>
+                </div>
+
+                <div class="glass-card p-6 mb-6">
+                    <h3 class="text-lg font-bold mb-6">Parâmetros Financeiros Atuais</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-slate-800/50 p-4 rounded-lg">
+                            <div class="text-xs text-gray-400">Colaboradores</div>
+                            <div class="text-2xl font-bold">45</div>
+                            <div class="text-xs text-gray-500">Força de trabalho</div>
+                        </div>
+
+                        <div class="bg-slate-800/50 p-4 rounded-lg">
+                            <div class="text-xs text-gray-400">Salário Médio</div>
+                            <div class="text-2xl font-bold">R$ 105k</div>
+                            <div class="text-xs text-gray-500">Anual</div>
+                        </div>
+
+                        <div class="bg-slate-800/50 p-4 rounded-lg">
+                            <div class="text-xs text-gray-400">Folha de Pagamento</div>
+                            <div class="text-2xl font-bold">R$ 4.73M</div>
+                            <div class="text-xs text-gray-500">Total anual</div>
+                        </div>
+
+                        <div class="bg-slate-800/50 p-4 rounded-lg">
+                            <div class="text-xs text-gray-400">Turnover</div>
+                            <div class="text-2xl font-bold">12%</div>
+                            <div class="text-xs text-gray-500">Taxa anual</div>
+                        </div>
+
+                        <div class="bg-slate-800/50 p-4 rounded-lg">
+                            <div class="text-xs text-gray-400">Absenteísmo</div>
+                            <div class="text-2xl font-bold">2.5%</div>
+                            <div class="text-xs text-gray-500">Taxa média</div>
+                        </div>
+
+                        <div class="bg-slate-800/50 p-4 rounded-lg">
+                            <div class="text-xs text-gray-400">Multiplicador Turnover</div>
+                            <div class="text-2xl font-bold">1.5x</div>
+                            <div class="text-xs text-gray-500">Operacional</div>
+                        </div>
+                    </div>
+
+                    <button onclick="openTCWLModal()" class="btn-primary">
+                        <i class="fas fa-sliders-h"></i> Customizar Parâmetros
+                    </button>
+                </div>
+
+                <div class="glass-card p-6 mb-6">
+                    <h3 class="text-lg font-bold mb-6">📊 TCWL Breakdown</h3>
+
+                    <div class="tcwl-row">
+                        <span>💸 Turnover Cost (saídas + vacancy + ramp-up)</span>
+                        <span id="tcwl-comp-turnover" class="font-semibold">R$ 900k</span>
+                    </div>
+
+                    <div class="tcwl-row">
+                        <span>😔 Disengagement Loss (34% dos desengajados)</span>
+                        <span id="tcwl-comp-disengagement" class="font-semibold">R$ 752k</span>
+                    </div>
+
+                    <div class="tcwl-row">
+                        <span>🤝 Meeting Friction (reuniões improdutivas)</span>
+                        <span id="tcwl-comp-friction" class="font-semibold">R$ 1.17M</span>
+                    </div>
+
+                    <div class="tcwl-row">
+                        <span>🏥 Absenteeism Cost (faltas + licenças)</span>
+                        <span id="tcwl-comp-absenteeism" class="font-semibold">R$ 490k</span>
+                    </div>
+
+                    <div class="tcwl-row tcwl-total">
+                        <span>🔴 TOTAL TCWL (Perda Anual Latente)</span>
+                        <span id="tcwl-comp-total">R$ 3.31M</span>
+                    </div>
+
+                    <div class="tcwl-percent">
+                        <p><strong>Como % da Folha de Pagamento:</strong> <span id="tcwl-comp-percent">69.9%</span></p>
+                        <p class="tcwl-benchmark">
+                            <strong>Benchmark CRÍTICO:</strong> <20% (Excelente) | 20-30% (Bom) | 30-40% (Crítico) | >40% (Extremo)
+                        </p>
+                        <p class="text-red-400 text-sm mt-2">
+                            ⚠️ <strong>ALERTA:</strong> Sua empresa está em nível EXTREMO. Cada R$ 100 em salários, R$ 69.90 estão sendo desperdiçados.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6">
+                    <h3 class="text-lg font-bold mb-4">💡 Oportunidades de Economia</h3>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                            <strong class="text-green-300">Reduzir Turnover de 12% → 8%</strong>
+                            <p class="text-sm text-gray-300">Economia: R$ 300k/ano</p>
+                        </div>
+                        <div class="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                            <strong class="text-green-300">Aumentar Engagement (40% → 60%)</strong>
+                            <p class="text-sm text-gray-300">Economia: R$ 400k/ano</p>
+                        </div>
+                        <div class="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                            <strong class="text-green-300">Reduzir Reuniões 40% (3h → 1.8h/semana)</strong>
+                            <p class="text-sm text-gray-300">Economia: R$ 468k/ano</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- PULSE SURVEY MODAL -->
+    <div id="pulseModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3><i class="fas fa-poll"></i> Pulse Survey (Pesquisa de Satisfação)</h3>
+
+            <div class="step-indicator" id="pulseStepIndicator"></div>
+
+            <div id="pulseQuestion"></div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="pulseProg" style="width: 0%"></div>
+            </div>
+
+            <div class="modal-buttons">
+                <button onclick="prevPulseQuestion()" class="btn-secondary" id="pulsePrevBtn" style="display:none;">
+                    ← Anterior
+                </button>
+                <button onclick="nextPulseQuestion()" class="btn-primary" id="pulseNextBtn">
+                    Próximo →
+                </button>
+            </div>
+
+            <button onclick="closePulseModal()" class="btn-secondary w-full mt-4">
+                Fechar
+            </button>
+        </div>
+    </div>
+
+    <!-- TCWL MODAL -->
+    <div id="tcwlModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3><i class="fas fa-calculator"></i> Calculadora TCWL Personalizada</h3>
+
+            <form onsubmit="calculateTCWL(event)">
+                <div class="form-group">
+                    <label>Número de Colaboradores</label>
+                    <input type="number" id="numEmployees" value="45" min="10" max="5000">
+                </div>
+
+                <div class="form-group">
+                    <label>Salário Médio Anual (R$)</label>
+                    <input type="number" id="avgSalary" value="105000" step="5000" min="30000">
+                </div>
+
+                <div class="form-group">
+                    <label>Taxa de Turnover Atual (%)</label>
+                    <input type="number" id="turnoverRate" value="12" min="0" max="100" step="0.5">
+                    <small>Benchmark Brasil 2024: 15-20%</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Taxa de Absenteísmo (%)</label>
+                    <input type="number" id="absenteeismRate" value="2.5" min="0" max="10" step="0.1">
+                    <small>Benchmark Brasil: 2-3%</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Horas em Reuniões Improdutivas/Semana</label>
+                    <input type="number" id="weeklyMeetingHours" value="3" min="0" max="40" step="0.5">
+                    <small>Benchmark: 2-4 horas</small>
+                </div>
+
+                <div class="form-group">
+                    <label>% de Ineficiência em Reuniões</label>
+                    <input type="range" id="meetingInefficiency" value="45" min="0" max="100">
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-top: 8px;">
+                        <span>0% (Otimizado)</span>
+                        <span id="efficiencyPercent">45%</span>
+                        <span>100% (Caos)</span>
+                    </div>
+                    <small>Benchmark: 40-50%</small>
+                </div>
+
+                <button type="submit" class="btn-primary w-full mt-6">
+                    Calcular TCWL
+                </button>
+            </form>
+
+            <div id="tcwlOutput" class="hidden mt-6">
+                <h4 style="margin-bottom: 16px; font-weight: 700;">📊 Resultado do Cálculo</h4>
+
+                <div class="tcwl-row">
+                    <span>💸 Turnover Loss</span>
+                    <span id="result-tcwl-turnover">R$ 0</span>
+                </div>
+
+                <div class="tcwl-row">
+                    <span>😔 Disengagement Loss</span>
+                    <span id="result-tcwl-disengagement">R$ 0</span>
+                </div>
+
+                <div class="tcwl-row">
+                    <span>🤝 Meeting Friction</span>
+                    <span id="result-tcwl-friction">R$ 0</span>
+                </div>
+
+                <div class="tcwl-row">
+                    <span>🏥 Absenteeism Cost</span>
+                    <span id="result-tcwl-absenteeism">R$ 0</span>
+                </div>
+
+                <div class="tcwl-row tcwl-total">
+                    <span>🔴 TOTAL TCWL</span>
+                    <span id="result-tcwl-total">R$ 0</span>
+                </div>
+
+                <div class="tcwl-percent">
+                    <p><strong>Como % da Folha:</strong> <span id="result-tcwl-percentage">0%</span></p>
+                    <p class="tcwl-benchmark">
+                        Benchmark: <20% Excelente | 20-30% Bom | 30-40% Crítico | >40% Extremo
+                    </p>
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button onclick="closeTCWLModal()" class="btn-secondary">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROI MODAL -->
+    <div id="roiModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3><i class="fas fa-chart-line"></i> ROI de Intervenção — <span id="roiEmployeeName"></span></h3>
+
+            <p class="text-sm text-gray-400 mt-2 mb-6">Selecione uma ação para calcular o retorno esperado:</p>
+
+            <div id="roiInterventions"></div>
+
+            <div id="roiOutput" class="hidden mt-6">
+                <h4 style="margin-bottom: 16px; font-weight: 700;">💰 Análise de ROI</h4>
+
+                <div class="tcwl-row">
+                    <span>Investimento</span>
+                    <span id="roiInvestment">R$ 0</span>
+                </div>
+
+                <div class="tcwl-row">
+                    <span>Valor de Retenção (custo turnover evitado)</span>
+                    <span id="roiRetention">R$ 0</span>
+                </div>
+
+                <div class="tcwl-row">
+                    <span>Taxa de Sucesso</span>
+                    <span id="roiSuccessRate">0%</span>
+                </div>
+
+                <div class="tcwl-row">
+                    <span>Expected Value</span>
+                    <span id="roiExpectedValue">R$ 0</span>
+                </div>
+
+                <div class="tcwl-row tcwl-total">
+                    <span>🎯 ROI</span>
+                    <span id="roiPercent">0%</span>
+                </div>
+
+                <div id="roiRecommendation" class="recommendation-box mt-4"></div>
+            </div>
+
+            <div class="modal-buttons">
+                <button onclick="closeROIModal()" class="btn-secondary">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BANT WIZARD MODAL -->
+    <div id="bantModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3><i class="fas fa-star"></i> Qualificação BANT — 5 Passos</h3>
+
+            <div class="step-indicator" id="bantStepIndicator"></div>
+
+            <!-- STEP 1: BUDGET -->
+            <div id="bant-step-1" class="bant-step">
+                <h4 style="margin-bottom: 16px;">1️⃣ BUDGET — Capacidade Financeira</h4>
+                <p class="text-sm text-gray-400 mb-4">
+                    Quanto sua empresa gasta atualmente com RH/People Technology?
+                </p>
+
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="budget" value="low">
+                        <span>< R$ 50k/ano</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="budget" value="medium" checked>
+                        <span>R$ 50-200k/ano</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="budget" value="high">
+                        <span>> R$ 200k/ano</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- STEP 2: AUTHORITY -->
+            <div id="bant-step-2" class="bant-step hidden">
+                <h4 style="margin-bottom: 16px;">2️⃣ AUTHORITY — Tomador de Decisão</h4>
+                <p class="text-sm text-gray-400 mb-4">
+                    Quem decide sobre investimentos em RH na sua empresa?
+                </p>
+
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="authority" value="low">
+                        <span>Apenas RH Tático</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="authority" value="medium" checked>
+                        <span>RH + Diretor Operacional</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="authority" value="high">
+                        <span>RH + Ops + CFO</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="authority" value="vhigh">
+                        <span>CEO já está envolvido</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- STEP 3: NEED -->
+            <div id="bant-step-3" class="bant-step hidden">
+                <h4 style="margin-bottom: 16px;">3️⃣ NEED — Validação do Problema</h4>
+                <p class="text-sm text-gray-400 mb-4">
+                    Qual é sua taxa de turnover anual? (Benchmark Brasil: 15-20%)
+                </p>
+
+                <div class="form-group">
+                    <input type="number" id="turnoverNeed" min="0" max="100" value="15" step="1">
+                    <small style="margin-top: 8px; display: block;">15% é crítico | 30%+ é extremo</small>
+                </div>
+            </div>
+
+            <!-- STEP 4: TIMELINE -->
+            <div id="bant-step-4" class="bant-step hidden">
+                <h4 style="margin-bottom: 16px;">4️⃣ TIMELINE — Urgência de Implementação</h4>
+                <p class="text-sm text-gray-400 mb-4">
+                    Quando você precisa resolver esse problema?
+                </p>
+
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="timeline" value="low">
+                        <span>Exploratório (6+ meses)</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="timeline" value="medium" checked>
+                        <span>Médio prazo (3-6 meses)</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="timeline" value="high">
+                        <span>Curto prazo (< 3 meses)</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="timeline" value="vhigh">
+                        <span>URGENTE (< 1 mês)</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- STEP 5: FINANCIAL -->
+            <div id="bant-step-5" class="bant-step hidden">
+                <h4 style="margin-bottom: 16px;">5️⃣ FINANCIAL JUSTIFICATION — ROI Esperado</h4>
+                <p class="text-sm text-gray-400 mb-4">
+                    Qual economia anual buscam alcançar?
+                </p>
+
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="financial" value="low">
+                        <span>< R$ 500k/ano</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="financial" value="medium" checked>
+                        <span>R$ 500k-1M/ano</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="financial" value="high">
+                        <span>> R$ 1M/ano</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- RESULT -->
+            <div id="bant-result" class="bant-step hidden">
+                <h4 style="margin-bottom: 16px; text-align: center;">Sua Pontuação BANT</h4>
+
+                <div class="bant-score-display" id="bantScoreValue">8.5</div>
+                <p style="text-align: center; font-size: 14px; color: #94a3b8; margin-bottom: 20px;">/ 10</p>
+
+                <div id="bantRecommendationBox" class="recommendation-box recommendation-go">
+                    ✅ GO FOR CLOSE — Esta é uma oportunidade qualificada. Agende reunião com CFO + Diretor RH.
+                </div>
+
+                <p class="text-xs text-gray-500 text-center mt-4">
+                    <strong>Próximos passos:</strong> Apresentar business case com ROI | Agendar demo completa | Preparar proposta
+                </p>
+            </div>
+
+            <div class="modal-buttons">
+                <button onclick="bantPrevStep()" class="btn-secondary" id="bantPrevBtn" style="display:none;">
+                    ← Anterior
+                </button>
+                <button onclick="bantNextStep()" class="btn-primary" id="bantNextBtn">
+                    Próximo →
+                </button>
+                <button onclick="closeBANTModal()" class="btn-secondary" id="bantCloseBtn">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // APPLICATION STATE & DATA
+        // ==========================================
+
+        const AppState = {
+            employees: [
+                { id: 1, name: "Mariana Costa", department: "Engineering", level: "Senior", salary: 180000, tenure_months: 48, gallup_q12: 9.0, engagement_classification: "ENGAGED", burnout_score: 25, burnout_level: "GREEN", psychological_safety: 4.2, turnover_risk_score: 12, ona_centrality_score: 92, ona_betweenness: 87, ona_degree: 18, network_impact: "HIGH", last_pulse_score: 8.5, pulse_trend_2weeks: "↑ +0.3", status: "HEALTHY" },
+                { id: 2, name: "Fernando Silva", department: "Sales", level: "IC2", salary: 72000, tenure_months: 18, gallup_q12: 4.2, engagement_classification: "PASSIVE", burnout_score: 72, burnout_level: "RED", psychological_safety: 2.1, turnover_risk_score: 78, ona_centrality_score: 34, ona_betweenness: 12, ona_degree: 5, network_impact: "MEDIUM", last_pulse_score: 3.8, pulse_trend_2weeks: "↓ -1.2", status: "AT_RISK" },
+                { id: 3, name: "Ana Santos", department: "Finance", level: "IC3", salary: 95000, tenure_months: 36, gallup_q12: 6.8, engagement_classification: "PASSIVE", burnout_score: 58, burnout_level: "YELLOW", psychological_safety: 3.2, turnover_risk_score: 65, ona_centrality_score: 71, ona_betweenness: 45, ona_degree: 12, network_impact: "MEDIUM", last_pulse_score: 6.2, pulse_trend_2weeks: "↑ +0.8", status: "AT_RISK" },
+                { id: 4, name: "Carlos Mendes", department: "Operations", level: "Manager", salary: 140000, tenure_months: 60, gallup_q12: 7.5, engagement_classification: "ENGAGED", burnout_score: 42, burnout_level: "YELLOW", psychological_safety: 3.8, turnover_risk_score: 35, ona_centrality_score: 88, ona_betweenness: 72, ona_degree: 21, network_impact: "HIGH", last_pulse_score: 7.2, pulse_trend_2weeks: "↓ -0.2", status: "HEALTHY" },
+                { id: 5, name: "Patricia Oliveira", department: "HR", level: "IC2", salary: 68000, tenure_months: 24, gallup_q12: 7.2, engagement_classification: "ENGAGED", burnout_score: 35, burnout_level: "GREEN", psychological_safety: 4.5, turnover_risk_score: 28, ona_centrality_score: 82, ona_betweenness: 65, ona_degree: 14, network_impact: "HIGH", last_pulse_score: 7.4, pulse_trend_2weeks: "↑ +0.5", status: "HEALTHY" },
+                { id: 6, name: "Roberto Alves", department: "Sales", level: "IC1", salary: 55000, tenure_months: 8, gallup_q12: 5.1, engagement_classification: "PASSIVE", burnout_score: 68, burnout_level: "RED", psychological_safety: 2.5, turnover_risk_score: 82, ona_centrality_score: 25, ona_betweenness: 8, ona_degree: 3, network_impact: "LOW", last_pulse_score: 4.5, pulse_trend_2weeks: "↓ -1.5", status: "CRITICAL" },
+                { id: 7, name: "Juliana Costa", department: "Engineering", level: "IC2", salary: 85000, tenure_months: 20, gallup_q12: 8.1, engagement_classification: "ENGAGED", burnout_score: 38, burnout_level: "YELLOW", psychological_safety: 4.0, turnover_risk_score: 32, ona_centrality_score: 75, ona_betweenness: 52, ona_degree: 11, network_impact: "MEDIUM", last_pulse_score: 8.0, pulse_trend_2weeks: "↑ +0.2", status: "HEALTHY" },
+                { id: 8, name: "Pedro Rocha", department: "Finance", level: "IC1", salary: 62000, tenure_months: 12, gallup_q12: 3.8, engagement_classification: "DISENGAGED", burnout_score: 85, burnout_level: "RED", psychological_safety: 1.8, turnover_risk_score: 91, ona_centrality_score: 18, ona_betweenness: 5, ona_degree: 2, network_impact: "LOW", last_pulse_score: 2.5, pulse_trend_2weeks: "↓ -2.1", status: "CRITICAL" },
+                { id: 9, name: "Luciana Pereira", department: "Operations", level: "IC2", salary: 78000, tenure_months: 28, gallup_q12: 6.5, engagement_classification: "PASSIVE", burnout_score: 52, burnout_level: "YELLOW", psychological_safety: 3.4, turnover_risk_score: 58, ona_centrality_score: 68, ona_betweenness: 38, ona_degree: 9, network_impact: "MEDIUM", last_pulse_score: 6.1, pulse_trend_2weeks: "↓ -0.3", status: "AT_RISK" },
+                { id: 10, name: "Diego Ferreira", department: "Engineering", level: "Senior", salary: 175000, tenure_months: 54, gallup_q12: 8.8, engagement_classification: "ENGAGED", burnout_score: 28, burnout_level: "GREEN", psychological_safety: 4.3, turnover_risk_score: 18, ona_centrality_score: 90, ona_betweenness: 84, ona_degree: 19, network_impact: "HIGH", last_pulse_score: 8.6, pulse_trend_2weeks: "↑ +0.4", status: "HEALTHY" },
+                { id: 11, name: "Sophia Martins", department: "Sales", level: "IC2", salary: 71000, tenure_months: 14, gallup_q12: 5.2, engagement_classification: "PASSIVE", burnout_score: 70, burnout_level: "RED", psychological_safety: 2.3, turnover_risk_score: 76, ona_centrality_score: 28, ona_betweenness: 10, ona_degree: 4, network_impact: "LOW", last_pulse_score: 5.1, pulse_trend_2weeks: "↓ -0.8", status: "AT_RISK" },
+                { id: 12, name: "Miguel Santos", department: "Operations", level: "IC1", salary: 60000, tenure_months: 6, gallup_q12: 4.5, engagement_classification: "PASSIVE", burnout_score: 75, burnout_level: "RED", psychological_safety: 2.6, turnover_risk_score: 84, ona_centrality_score: 22, ona_betweenness: 7, ona_degree: 2, network_impact: "LOW", last_pulse_score: 4.2, pulse_trend_2weeks: "↓ -1.2", status: "CRITICAL" },
+                { id: 13, name: "Beatriz Gomes", department: "HR", level: "IC1", salary: 58000, tenure_months: 10, gallup_q12: 6.8, engagement_classification: "PASSIVE", burnout_score: 44, burnout_level: "YELLOW", psychological_safety: 3.6, turnover_risk_score: 42, ona_centrality_score: 58, ona_betweenness: 25, ona_degree: 6, network_impact: "LOW", last_pulse_score: 6.5, pulse_trend_2weeks: "↑ +0.1", status: "MONITOR" },
+                { id: 14, name: "Lucas Tavares", department: "Finance", level: "IC2", salary: 88000, tenure_months: 32, gallup_q12: 7.0, engagement_classification: "ENGAGED", burnout_score: 48, burnout_level: "YELLOW", psychological_safety: 3.9, turnover_risk_score: 45, ona_centrality_score: 72, ona_betweenness: 48, ona_degree: 10, network_impact: "MEDIUM", last_pulse_score: 7.1, pulse_trend_2weeks: "↑ +0.3", status: "HEALTHY" },
+                { id: 15, name: "Amanda Costa", department: "Engineering", level: "IC1", salary: 72000, tenure_months: 15, gallup_q12: 7.9, engagement_classification: "ENGAGED", burnout_score: 32, burnout_level: "GREEN", psychological_safety: 4.1, turnover_risk_score: 25, ona_centrality_score: 64, ona_betweenness: 35, ona_degree: 8, network_impact: "MEDIUM", last_pulse_score: 7.7, pulse_trend_2weeks: "↑ +0.2", status: "HEALTHY" },
+                { id: 16, name: "Rafael Siqueira", department: "Sales", level: "Manager", salary: 120000, tenure_months: 42, gallup_q12: 6.2, engagement_classification: "PASSIVE", burnout_score: 62, burnout_level: "YELLOW", psychological_safety: 3.1, turnover_risk_score: 62, ona_centrality_score: 85, ona_betweenness: 70, ona_degree: 15, network_impact: "HIGH", last_pulse_score: 6.0, pulse_trend_2weeks: "↓ -0.2", status: "AT_RISK" },
+                { id: 17, name: "Camila Ribeiro", department: "Operations", level: "IC1", salary: 59000, tenure_months: 7, gallup_q12: 5.8, engagement_classification: "PASSIVE", burnout_score: 66, burnout_level: "RED", psychological_safety: 2.8, turnover_risk_score: 72, ona_centrality_score: 31, ona_betweenness: 12, ona_degree: 4, network_impact: "LOW", last_pulse_score: 5.5, pulse_trend_2weeks: "↓ -0.9", status: "AT_RISK" },
+                { id: 18, name: "Gustavo Neves", department: "Finance", level: "IC1", salary: 64000, tenure_months: 11, gallup_q12: 6.4, engagement_classification: "PASSIVE", burnout_score: 54, burnout_level: "YELLOW", psychological_safety: 3.5, turnover_risk_score: 52, ona_centrality_score: 45, ona_betweenness: 20, ona_degree: 5, network_impact: "LOW", last_pulse_score: 6.2, pulse_trend_2weeks: "↑ +0.1", status: "MONITOR" },
+                { id: 19, name: "Natalia Rocha", department: "Engineering", level: "IC2", salary: 82000, tenure_months: 22, gallup_q12: 7.6, engagement_classification: "ENGAGED", burnout_score: 40, burnout_level: "YELLOW", psychological_safety: 4.0, turnover_risk_score: 30, ona_centrality_score: 70, ona_betweenness: 42, ona_degree: 9, network_impact: "MEDIUM", last_pulse_score: 7.4, pulse_trend_2weeks: "↑ +0.3", status: "HEALTHY" },
+                { id: 20, name: "Thiago Lima", department: "Sales", level: "IC1", salary: 54000, tenure_months: 5, gallup_q12: 4.0, engagement_classification: "DISENGAGED", burnout_score: 80, burnout_level: "RED", psychological_safety: 2.0, turnover_risk_score: 88, ona_centrality_score: 20, ona_betweenness: 6, ona_degree: 2, network_impact: "LOW", last_pulse_score: 3.8, pulse_trend_2weeks: "↓ -1.8", status: "CRITICAL" },
+                { id: 21, name: "Veronica Silva", department: "HR", level: "Manager", salary: 125000, tenure_months: 50, gallup_q12: 8.0, engagement_classification: "ENGAGED", burnout_score: 35, burnout_level: "GREEN", psychological_safety: 4.4, turnover_risk_score: 22, ona_centrality_score: 86, ona_betweenness: 68, ona_degree: 16, network_impact: "HIGH", last_pulse_score: 8.1, pulse_trend_2weeks: "↑ +0.4", status: "HEALTHY" },
+                { id: 22, name: "Frederico Dias", department: "Operations", level: "IC2", salary: 76000, tenure_months: 26, gallup_q12: 6.0, engagement_classification: "PASSIVE", burnout_score: 61, burnout_level: "YELLOW", psychological_safety: 3.3, turnover_risk_score: 60, ona_centrality_score: 63, ona_betweenness: 38, ona_degree: 8, network_impact: "MEDIUM", last_pulse_score: 5.9, pulse_trend_2weeks: "↓ -0.4", status: "AT_RISK" },
+                { id: 23, name: "Isabela Mendes", department: "Finance", level: "IC1", salary: 65000, tenure_months: 13, gallup_q12: 7.1, engagement_classification: "ENGAGED", burnout_score: 46, burnout_level: "YELLOW", psychological_safety: 3.7, turnover_risk_score: 40, ona_centrality_score: 52, ona_betweenness: 28, ona_degree: 6, network_impact: "LOW", last_pulse_score: 7.0, pulse_trend_2weeks: "↑ +0.2", status: "MONITOR" },
+                { id: 24, name: "Matheus Oliveira", department: "Engineering", level: "IC1", salary: 74000, tenure_months: 18, gallup_q12: 8.2, engagement_classification: "ENGAGED", burnout_score: 36, burnout_level: "GREEN", psychological_safety: 4.2, turnover_risk_score: 28, ona_centrality_score: 66, ona_betweenness: 40, ona_degree: 10, network_impact: "MEDIUM", last_pulse_score: 8.0, pulse_trend_2weeks: "↑ +0.5", status: "HEALTHY" },
+                { id: 25, name: "Cristina Barbosa", department: "Sales", level: "IC1", salary: 56000, tenure_months: 9, gallup_q12: 4.8, engagement_classification: "PASSIVE", burnout_score: 73, burnout_level: "RED", psychological_safety: 2.4, turnover_risk_score: 80, ona_centrality_score: 26, ona_betweenness: 9, ona_degree: 3, network_impact: "LOW", last_pulse_score: 4.6, pulse_trend_2weeks: "↓ -1.3", status: "CRITICAL" },
+                { id: 26, name: "Eduardo Costa", department: "Operations", level: "IC1", salary: 61000, tenure_months: 8, gallup_q12: 5.5, engagement_classification: "PASSIVE", burnout_score: 69, burnout_level: "RED", psychological_safety: 2.9, turnover_risk_score: 74, ona_centrality_score: 29, ona_betweenness: 11, ona_degree: 3, network_impact: "LOW", last_pulse_score: 5.2, pulse_trend_2weeks: "↓ -1.1", status: "AT_RISK" },
+                { id: 27, name: "Fernanda Gomes", department: "Finance", level: "IC2", salary: 86000, tenure_months: 30, gallup_q12: 6.9, engagement_classification: "PASSIVE", burnout_score: 50, burnout_level: "YELLOW", psychological_safety: 3.6, turnover_risk_score: 48, ona_centrality_score: 67, ona_betweenness: 40, ona_degree: 8, network_impact: "MEDIUM", last_pulse_score: 6.8, pulse_trend_2weeks: "↑ +0.1", status: "MONITOR" },
+                { id: 28, name: "Heitor Martins", department: "Engineering", level: "Senior", salary: 170000, tenure_months: 52, gallup_q12: 8.7, engagement_classification: "ENGAGED", burnout_score: 26, burnout_level: "GREEN", psychological_safety: 4.4, turnover_risk_score: 15, ona_centrality_score: 91, ona_betweenness: 83, ona_degree: 18, network_impact: "HIGH", last_pulse_score: 8.5, pulse_trend_2weeks: "↑ +0.3", status: "HEALTHY" },
+                { id: 29, name: "Iris Santos", department: "HR", level: "IC1", salary: 57000, tenure_months: 9, gallup_q12: 6.5, engagement_classification: "PASSIVE", burnout_score: 48, burnout_level: "YELLOW", psychological_safety: 3.8, turnover_risk_score: 45, ona_centrality_score: 55, ona_betweenness: 24, ona_degree: 6, network_impact: "LOW", last_pulse_score: 6.4, pulse_trend_2weeks: "↑ +0.2", status: "MONITOR" },
+                { id: 30, name: "João Sousa", department: "Sales", level: "IC2", salary: 73000, tenure_months: 19, gallup_q12: 5.0, engagement_classification: "PASSIVE", burnout_score: 71, burnout_level: "RED", psychological_safety: 2.5, turnover_risk_score: 75, ona_centrality_score: 32, ona_betweenness: 13, ona_degree: 4, network_impact: "LOW", last_pulse_score: 4.9, pulse_trend_2weeks: "↓ -1.0", status: "AT_RISK" },
+                { id: 31, name: "Karen Ramos", department: "Operations", level: "Manager", salary: 130000, tenure_months: 44, gallup_q12: 7.3, engagement_classification: "ENGAGED", burnout_score: 44, burnout_level: "YELLOW", psychological_safety: 4.0, turnover_risk_score: 38, ona_centrality_score: 87, ona_betweenness: 71, ona_degree: 17, network_impact: "HIGH", last_pulse_score: 7.2, pulse_trend_2weeks: "↓ -0.1", status: "HEALTHY" },
+                { id: 32, name: "Leonardo Cardoso", department: "Finance", level: "IC1", salary: 63000, tenure_months: 10, gallup_q12: 5.9, engagement_classification: "PASSIVE", burnout_score: 56, burnout_level: "YELLOW", psychological_safety: 3.4, turnover_risk_score: 54, ona_centrality_score: 48, ona_betweenness: 22, ona_degree: 5, network_impact: "LOW", last_pulse_score: 5.8, pulse_trend_2weeks: "↓ -0.2", status: "MONITOR" },
+                { id: 33, name: "Monica Freitas", department: "Engineering", level: "IC2", salary: 84000, tenure_months: 21, gallup_q12: 7.8, engagement_classification: "ENGAGED", burnout_score: 37, burnout_level: "YELLOW", psychological_safety: 4.1, turnover_risk_score: 29, ona_centrality_score: 73, ona_betweenness: 50, ona_degree: 11, network_impact: "MEDIUM", last_pulse_score: 7.6, pulse_trend_2weeks: "↑ +0.3", status: "HEALTHY" },
+                { id: 34, name: "Olegario Souza", department: "Sales", level: "IC1", salary: 55000, tenure_months: 7, gallup_q12: 4.3, engagement_classification: "PASSIVE", burnout_score: 76, burnout_level: "RED", psychological_safety: 2.2, turnover_risk_score: 85, ona_centrality_score: 23, ona_betweenness: 8, ona_degree: 3, network_impact: "LOW", last_pulse_score: 4.1, pulse_trend_2weeks: "↓ -1.4", status: "CRITICAL" },
+                { id: 35, name: "Patricia Lima", department: "Operations", level: "IC1", salary: 60000, tenure_months: 5, gallup_q12: 5.2, engagement_classification: "PASSIVE", burnout_score: 72, burnout_level: "RED", psychological_safety: 2.7, turnover_risk_score: 78, ona_centrality_score: 27, ona_betweenness: 9, ona_degree: 2, network_impact: "LOW", last_pulse_score: 5.0, pulse_trend_2weeks: "↓ -1.2", status: "CRITICAL" },
+                { id: 36, name: "Quentin Bianchi", department: "Finance", level: "IC1", salary: 66000, tenure_months: 14, gallup_q12: 7.0, engagement_classification: "ENGAGED", burnout_score: 47, burnout_level: "YELLOW", psychological_safety: 3.8, turnover_risk_score: 42, ona_centrality_score: 54, ona_betweenness: 30, ona_degree: 7, network_impact: "LOW", last_pulse_score: 6.9, pulse_trend_2weeks: "↑ +0.2", status: "MONITOR" },
+                { id: 37, name: "Rosangela Passos", department: "Engineering", level: "IC1", salary: 73000, tenure_months: 16, gallup_q12: 8.0, engagement_classification: "ENGAGED", burnout_score: 34, burnout_level: "GREEN", psychological_safety: 4.1, turnover_risk_score: 26, ona_centrality_score: 65, ona_betweenness: 38, ona_degree: 9, network_impact: "MEDIUM", last_pulse_score: 7.9, pulse_trend_2weeks: "↑ +0.4", status: "HEALTHY" },
+                { id: 38, name: "Samuel Ribeiro", department: "HR", level: "IC1", salary: 59000, tenure_months: 11, gallup_q12: 6.7, engagement_classification: "PASSIVE", burnout_score: 50, burnout_level: "YELLOW", psychological_safety: 3.7, turnover_risk_score: 46, ona_centrality_score: 57, ona_betweenness: 26, ona_degree: 6, network_impact: "LOW", last_pulse_score: 6.6, pulse_trend_2weeks: "↑ +0.1", status: "MONITOR" },
+                { id: 39, name: "Tania Braz", department: "Sales", level: "IC1", salary: 57000, tenure_months: 10, gallup_q12: 4.6, engagement_classification: "PASSIVE", burnout_score: 70, burnout_level: "RED", psychological_safety: 2.6, turnover_risk_score: 77, ona_centrality_score: 30, ona_betweenness: 11, ona_degree: 3, network_impact: "LOW", last_pulse_score: 4.5, pulse_trend_2weeks: "↓ -1.1", status: "AT_RISK" },
+                { id: 40, name: "Ulisses Marques", department: "Operations", level: "IC2", salary: 77000, tenure_months: 27, gallup_q12: 6.3, engagement_classification: "PASSIVE", burnout_score: 59, burnout_level: "YELLOW", psychological_safety: 3.3, turnover_risk_score: 58, ona_centrality_score: 66, ona_betweenness: 36, ona_degree: 8, network_impact: "MEDIUM", last_pulse_score: 6.1, pulse_trend_2weeks: "↓ -0.3", status: "AT_RISK" },
+                { id: 41, name: "Viviana Alonso", department: "Finance", level: "IC1", salary: 64000, tenure_months: 12, gallup_q12: 6.8, engagement_classification: "PASSIVE", burnout_score: 52, burnout_level: "YELLOW", psychological_safety: 3.5, turnover_risk_score: 50, ona_centrality_score: 49, ona_betweenness: 23, ona_degree: 5, network_impact: "LOW", last_pulse_score: 6.7, pulse_trend_2weeks: "↑ +0.1", status: "MONITOR" },
+                { id: 42, name: "Wagner Santos", department: "Engineering", level: "IC1", salary: 75000, tenure_months: 19, gallup_q12: 7.9, engagement_classification: "ENGAGED", burnout_score: 39, burnout_level: "YELLOW", psychological_safety: 4.1, turnover_risk_score: 31, ona_centrality_score: 69, ona_betweenness: 44, ona_degree: 10, network_impact: "MEDIUM", last_pulse_score: 7.8, pulse_trend_2weeks: "↑ +0.3", status: "HEALTHY" },
+                { id: 43, name: "Ximena Garcia", department: "HR", level: "IC1", salary: 58000, tenure_months: 8, gallup_q12: 6.4, engagement_classification: "PASSIVE", burnout_score: 49, burnout_level: "YELLOW", psychological_safety: 3.7, turnover_risk_score: 44, ona_centrality_score: 56, ona_betweenness: 25, ona_degree: 6, network_impact: "LOW", last_pulse_score: 6.3, pulse_trend_2weeks: "↑ +0.2", status: "MONITOR" },
+                { id: 44, name: "Yuri Mendes", department: "Sales", level: "IC2", salary: 72000, tenure_months: 17, gallup_q12: 5.1, engagement_classification: "PASSIVE", burnout_score: 68, burnout_level: "RED", psychological_safety: 2.7, turnover_risk_score: 73, ona_centrality_score: 33, ona_betweenness: 14, ona_degree: 4, network_impact: "LOW", last_pulse_score: 5.0, pulse_trend_2weeks: "↓ -0.9", status: "AT_RISK" },
+                { id: 45, name: "Zaira Ferreira", department: "Operations", level: "IC1", salary: 61000, tenure_months: 6, gallup_q12: 5.4, engagement_classification: "PASSIVE", burnout_score: 65, burnout_level: "RED", psychological_safety: 2.8, turnover_risk_score: 70, ona_centrality_score: 28, ona_betweenness: 10, ona_degree: 3, network_impact: "LOW", last_pulse_score: 5.3, pulse_trend_2weeks: "↓ -0.8", status: "AT_RISK" }
+            ],
+
+            pulse_history: [
+                { week: "2025-12-01", avg_engagement: 6.1, avg_wellbeing: 5.2, responses_count: 41 },
+                { week: "2025-12-08", avg_engagement: 6.2, avg_wellbeing: 5.4, responses_count: 43 },
+                { week: "2025-12-15", avg_engagement: 6.0, avg_wellbeing: 5.1, responses_count: 40 },
+                { week: "2025-12-22", avg_engagement: 5.9, avg_wellbeing: 5.0, responses_count: 38 }
+            ],
+
+            metrics: {
+                total_employees: 45,
+                annual_turnover_rate: 0.12,
+                annual_turnover_count: 5,
+                avg_gallup_q12: 6.8,
+                percent_engaged: 0.35,
+                percent_passive: 0.40,
+                percent_disengaged: 0.25,
+                burnout_green: 0.60,
+                burnout_yellow: 0.25,
+                burnout_red: 0.15,
+                tcwl_turnover: 900000,
+                tcwl_disengagement: 752000,
+                tcwl_friction: 1170000,
+                tcwl_absenteeism: 490000,
+                tcwl_total: 3312000,
+                tcwl_percent_of_payroll: 0.699,
+                enps_score: 42,
+                hcroi: 2.3
+            }
+        };
+
+        // ==========================================
+        // UI FUNCTIONS - NAVIGATION
+        // ==========================================
+
+        function switchView(viewName) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewName).classList.add('active');
+
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+        }
+
+        // ==========================================
+        // CHART INITIALIZATION
+        // ==========================================
+
+        const chartColors = {
+            primary: '#06B6D4',
+            success: '#10B981',
+            warning: '#F59E0B',
+            danger: '#EF4444',
+            purple: '#8B5CF6',
+            dark: '#0F172A'
+        };
+
+        // Engagement Trend Chart
+        function initEngagementChart() {
+            const ctx = document.getElementById('engagementChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: AppState.pulse_history.map(p => p.week),
+                    datasets: [
+                        {
+                            label: 'Engajamento Médio',
+                            data: AppState.pulse_history.map(p => p.avg_engagement),
+                            borderColor: chartColors.primary,
+                            backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Bem-estar Médio',
+                            data: AppState.pulse_history.map(p => p.avg_wellbeing),
+                            borderColor: chartColors.success,
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { min: 0, max: 10, grid: { color: 'rgba(148, 163, 184, 0.1)' } },
+                        x: { grid: { color: 'rgba(148, 163, 184, 0.1)' } }
+                    }
+                }
+            });
+        }
+
+        // Burnout Distribution Chart
+        function initBurnoutChart() {
+            const ctx = document.getElementById('burnoutChart').getContext('2d');
+            const burnoutCounts = [
+                Math.round(AppState.metrics.total_employees * AppState.metrics.burnout_green),
+                Math.round(AppState.metrics.total_employees * AppState.metrics.burnout_yellow),
+                Math.round(AppState.metrics.total_employees * AppState.metrics.burnout_red)
+            ];
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Verde (Saudável)', 'Amarelo (Atenção)', 'Vermelho (Crítico)'],
+                    datasets: [{
+                        data: burnoutCounts,
+                        backgroundColor: [chartColors.success, chartColors.warning, chartColors.danger],
+                        borderColor: chartColors.dark,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#cbd5e1' } }
+                    }
+                }
+            });
+        }
+
+        // TCWL Breakdown Chart
+        function initTCWLChart() {
+            const ctx = document.getElementById('tcwlChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Turnover', 'Desengajamento', 'reunião de atrito/fricção', 'Absenteismo'],
+                    datasets: [{
+                        label: 'TCWL Components (R$)',
+                        data: [
+                            AppState.metrics.tcwl_turnover / 1000000,
+                            AppState.metrics.tcwl_disengagement / 1000000,
+                            AppState.metrics.tcwl_friction / 1000000,
+                            AppState.metrics.tcwl_absenteeism / 1000000
+                        ],
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.6)',
+                            'rgba(245, 158, 11, 0.6)',
+                            'rgba(59, 130, 246, 0.6)',
+                            'rgba(168, 85, 247, 0.6)'
+                        ],
+                        borderColor: [
+                            chartColors.danger,
+                            chartColors.warning,
+                            'rgb(59, 130, 246)',
+                            chartColors.purple
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            ticks: { callback: value => 'R$ ' + value + 'M' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        },
+                        x: { grid: { color: 'rgba(148, 163, 184, 0.1)' } }
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // PULSE SURVEY LOGIC
+        // ==========================================
+
+        const pulseQuestions = [
+            { q: "Como você avalia seu nível de engajamento no trabalho?", type: "slider", min: 0, max: 10 },
+            { q: "Você se sente seguro(a) para expressar ideias diferentes?", type: "likert", options: ["Discordo muito", "Discordo", "Neutro", "Concordo", "Concordo muito"] },
+            { q: "Quantas horas por semana em reuniões improdutivas?", type: "number", min: 0, max: 40 },
+            { q: "Se recebesse proposta equivalente, aceitaria?", type: "percentage" },
+            { q: "Como está seu bem-estar geral?", type: "likert", options: ["Muito ruim", "Ruim", "OK", "Bom", "Excelente"] }
+        ];
+
+        let pulseCurrentQuestion = 0;
+        let pulseAnswers = [];
+
+        function openPulseModal() {
+            document.getElementById('pulseModal').classList.add('active');
+            pulseCurrentQuestion = 0;
+            pulseAnswers = [];
+            renderPulseQuestion();
+        }
+
+        function closePulseModal() {
+            document.getElementById('pulseModal').classList.remove('active');
+        }
+
+        function renderPulseQuestion() {
+            const q = pulseQuestions[pulseCurrentQuestion];
+            let html = `<h4 style="margin-bottom: 20px; font-size: 18px;">${q.q}</h4>`;
+
+            if (q.type === 'slider') {
+                html += `
+                    <input type="range" id="pulseAnswer" min="${q.min}" max="${q.max}" value="${q.min}" style="width: 100%;">
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-top: 10px; color: #94a3b8;">
+                        <span>Mínimo</span>
+                        <span id="sliderValue">${q.min}</span>
+                        <span>Máximo</span>
+                    </div>
+                `;
+                setTimeout(() => {
+                    document.getElementById('pulseAnswer').oninput = e => {
+                        document.getElementById('sliderValue').textContent = e.target.value;
+                    };
+                }, 10);
+            } else if (q.type === 'likert') {
+                html += '<div class="pulse-options">';
+                q.options.forEach((opt, i) => {
+                    html += `
+                        <label class="pulse-option">
+                            <input type="radio" name="pulseAnswer" value="${i}">
+                            <span>${opt}</span>
+                        </label>
+                    `;
+                });
+                html += '</div>';
+            } else if (q.type === 'number') {
+                html += `<input type="number" id="pulseAnswer" min="${q.min}" max="${q.max}" placeholder="Digite um número" style="width: 100%; padding: 10px; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 8px; color: #f1f5f9;">`;
+            } else if (q.type === 'percentage') {
+                html += `
+                    <input type="range" id="pulseAnswer" min="0" max="100" value="50" style="width: 100%;">
+                    <div style="text-align: center; margin-top: 20px; font-size: 32px; font-weight: bold; color: #06b6d4;">
+                        <span id="percentValue">50%</span>
+                    </div>
+                `;
+                setTimeout(() => {
+                    document.getElementById('pulseAnswer').oninput = e => {
+                        document.getElementById('percentValue').textContent = e.target.value + '%';
+                    };
+                }, 10);
+            }
+
+            document.getElementById('pulseQuestion').innerHTML = html;
+
+            // Update progress
+            const progress = ((pulseCurrentQuestion + 1) / pulseQuestions.length) * 100;
+            document.getElementById('pulseProg').style.width = progress + '%';
+
+            // Update buttons
+            document.getElementById('pulsePrevBtn').style.display = pulseCurrentQuestion > 0 ? 'block' : 'none';
+            document.getElementById('pulseNextBtn').textContent = pulseCurrentQuestion < pulseQuestions.length - 1 ? 'Próximo →' : 'Enviar →';
+        }
+
+        function nextPulseQuestion() {
+            const q = pulseQuestions[pulseCurrentQuestion];
+            let answer;
+
+            if (q.type === 'slider' || q.type === 'number' || q.type === 'percentage') {
+                answer = parseFloat(document.getElementById('pulseAnswer').value);
+            } else if (q.type === 'likert') {
+                answer = document.querySelector('input[name="pulseAnswer"]:checked')?.value;
+                if (answer === undefined) {
+                    alert('Por favor, selecione uma resposta');
+                    return;
+                }
+            }
+
+            pulseAnswers.push(answer);
+
+            if (pulseCurrentQuestion < pulseQuestions.length - 1) {
+                pulseCurrentQuestion++;
+                renderPulseQuestion();
+            } else {
+                completePulse();
+            }
+        }
+
+        function prevPulseQuestion() {
+            if (pulseCurrentQuestion > 0) {
+                pulseCurrentQuestion--;
+                pulseAnswers.pop();
+                renderPulseQuestion();
+            }
+        }
+
+        function completePulse() {
+            let feedback = '✅ Obrigado! Seus dados foram registrados.';
+            if (pulseAnswers[0] >= 7) {
+                feedback = '✅ Você está em zona de ouro!';
+            } else if (pulseAnswers[0] >= 5) {
+                feedback = '⚠️ Você está em zona de atenção.';
+            } else {
+                feedback = '🔴 Você está em zona crítica. Fale com RH.';
+            }
+
+            alert(feedback);
+            closePulseModal();
+        }
+
+        // ==========================================
+        // TCWL CALCULATOR
+        // ==========================================
+
+        function openTCWLModal() {
+            document.getElementById('tcwlModal').classList.add('active');
+        }
+
+        function closeTCWLModal() {
+            document.getElementById('tcwlModal').classList.remove('active');
+        }
+
+        function calculateTCWL(event) {
+            event.preventDefault();
+
+            const params = {
+                numEmployees: parseFloat(document.getElementById('numEmployees').value),
+                avgSalary: parseFloat(document.getElementById('avgSalary').value),
+                turnoverRate: parseFloat(document.getElementById('turnoverRate').value) / 100,
+                absenteeismRate: parseFloat(document.getElementById('absenteeismRate').value) / 100,
+                weeklyMeetingHours: parseFloat(document.getElementById('weeklyMeetingHours').value),
+                meetingInefficiency: parseFloat(document.getElementById('meetingInefficiency').value) / 100
+            };
+
+            const tcwl = {
+                turnover: params.numEmployees * params.turnoverRate * params.avgSalary * 1.5,
+                disengagement: (params.numEmployees * 0.40 * params.avgSalary * 0.15) + (params.numEmployees * 0.10 * params.avgSalary * 0.34),
+                friction: params.weeklyMeetingHours * (params.avgSalary / 1920) * 52 * params.numEmployees * params.meetingInefficiency,
+                absenteeism: params.numEmployees * 260 * (params.avgSalary / 260) * params.absenteeismRate * 1.2
+            };
+
+            tcwl.total = tcwl.turnover + tcwl.disengagement + tcwl.friction + tcwl.absenteeism;
+            tcwl.percentage = (tcwl.total / (params.numEmployees * params.avgSalary)) * 100;
+
+            document.getElementById('result-tcwl-turnover').textContent = 'R$ ' + tcwl.turnover.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById('result-tcwl-disengagement').textContent = 'R$ ' + tcwl.disengagement.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById('result-tcwl-friction').textContent = 'R$ ' + tcwl.friction.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById('result-tcwl-absenteeism').textContent = 'R$ ' + tcwl.absenteeism.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById('result-tcwl-total').textContent = 'R$ ' + tcwl.total.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById('result-tcwl-percentage').textContent = tcwl.percentage.toFixed(1) + '%';
+
+            document.getElementById('tcwlOutput').classList.remove('hidden');
+
+            // Update meeting efficiency slider display
+            document.getElementById('efficiencyPercent').textContent = document.getElementById('meetingInefficiency').value + '%';
+        }
+
+        // ==========================================
+        // RISK TABLE POPULATION
+        // ==========================================
+
+        function populateRiskTable() {
+            const sorted = [...AppState.employees]
+                .sort((a, b) => b.turnover_risk_score - a.turnover_risk_score)
+                .slice(0, 15);
+
+            let html = '';
+            sorted.forEach(emp => {
+                let riskBadge = '';
+                if (emp.turnover_risk_score >= 70) {
+                    riskBadge = `<span class="badge badge-danger">${emp.turnover_risk_score}%</span>`;
+                } else if (emp.turnover_risk_score >= 50) {
+                    riskBadge = `<span class="badge badge-warning">${emp.turnover_risk_score}%</span>`;
+                } else if (emp.turnover_risk_score >= 30) {
+                    riskBadge = `<span class="badge badge-info">${emp.turnover_risk_score}%</span>`;
+                } else {
+                    riskBadge = `<span class="badge badge-success">${emp.turnover_risk_score}%</span>`;
+                }
+
+                let burnoutBadge = emp.burnout_level === 'GREEN' ? 
+                    '<span class="badge badge-success">🟢 Verde</span>' :
+                    emp.burnout_level === 'YELLOW' ?
+                    '<span class="badge badge-warning">🟡 Amarelo</span>' :
+                    '<span class="badge badge-danger">🔴 Vermelho</span>';
+
+                let action = emp.turnover_risk_score >= 70 ? 'Urgente' :
+                             emp.turnover_risk_score >= 50 ? 'Coaching' :
+                             'Monitor';
+
+                html += `
+                    <tr onclick="openROIModal(${emp.id})">
+                        <td><strong>${emp.name}</strong></td>
+                        <td>${emp.department}</td>
+                        <td>${emp.gallup_q12.toFixed(1)}/10</td>
+                        <td>${riskBadge}</td>
+                        <td>${burnoutBadge}</td>
+                        <td>R$ ${(emp.salary * 1.5 / 1000).toFixed(0)}k</td>
+                        <td><button class="btn-danger">${action}</button></td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('riskTable').innerHTML = html;
+
+            // Update risk distribution
+            const critical = AppState.employees.filter(e => e.turnover_risk_score > 80).length;
+            const high = AppState.employees.filter(e => e.turnover_risk_score >= 60 && e.turnover_risk_score <= 80).length;
+            const medium = AppState.employees.filter(e => e.turnover_risk_score >= 40 && e.turnover_risk_score < 60).length;
+            const low = AppState.employees.filter(e => e.turnover_risk_score < 40).length;
+
+            document.getElementById('risk-critical').textContent = critical;
+            document.getElementById('risk-high').textContent = high;
+            document.getElementById('risk-medium').textContent = medium;
+            document.getElementById('risk-low').textContent = low;
+        }
+
+        // ==========================================
+        // ROI CALCULATOR
+        // ==========================================
+
+        let currentROIEmployee = null;
+
+        function openROIModal(empId) {
+            currentROIEmployee = AppState.employees.find(e => e.id === empId);
+            document.getElementById('roiEmployeeName').textContent = currentROIEmployee.name;
+
+            const interventions = [
+                { id: 'coaching', title: '🎯 Sessão de Coaching', desc: 'Investimento: R$ 12.000 (1 sesão/mês, 6 meses)', successRate: 0.60 },
+                { id: 'mentoring', title: '👥 Programa de Mentoria', desc: 'Investimento: R$ 6.000 (matching + acompanhamento)', successRate: 0.55 },
+                { id: 'raise', title: '💰 Aumento Salarial', desc: 'Investimento: R$ 8.000/ano (10% de aumento)', successRate: 0.75 },
+                { id: 'transfer', title: '🔄 Realocação', desc: 'Investimento: R$ 2.000 (onboarding)', successRate: 0.50 }
+            ];
+
+            let html = '';
+            interventions.forEach(int => {
+                html += `
+                    <div class="roi-option" onclick="calculateROI('${int.id}')">
+                        <h5>${int.title}</h5>
+                        <p>${int.desc}</p>
+                        <p class="roi-success">Taxa de sucesso: ~${(int.successRate * 100).toFixed(0)}%</p>
+                    </div>
+                `;
+            });
+
+            document.getElementById('roiInterventions').innerHTML = html;
+            document.getElementById('roiOutput').classList.add('hidden');
+            document.getElementById('roiModal').classList.add('active');
+        }
+
+        function closeROIModal() {
+            document.getElementById('roiModal').classList.remove('active');
+        }
+
+        function calculateROI(interventionType) {
+            const interventions = {
+                coaching: { investment: 12000, successRate: 0.60 },
+                mentoring: { investment: 6000, successRate: 0.55 },
+                raise: { investment: 8000, successRate: 0.75 },
+                transfer: { investment: 2000, successRate: 0.50 }
+            };
+
+            const intervention = interventions[interventionType];
+            const retentionValue = currentROIEmployee.salary * 1.5; // 1.5x salary as retention value
+            const expectedValue = retentionValue * intervention.successRate;
+            const roi = ((expectedValue - intervention.investment) / intervention.investment) * 100;
+
+            document.getElementById('roiInvestment').textContent = 'R$ ' + intervention.investment.toLocaleString('pt-BR');
+            document.getElementById('roiRetention').textContent = 'R$ ' + retentionValue.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById('roiSuccessRate').textContent = (intervention.successRate * 100).toFixed(0) + '%';
+            document.getElementById('roiExpectedValue').textContent = 'R$ ' + expectedValue.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById('roiPercent').textContent = roi.toFixed(0) + '%';
+
+            const recBox = document.getElementById('roiRecommendation');
+            if (roi > 500) {
+                recBox.innerHTML = '<strong style="color: #10b981;">✅ GO FOR IT</strong> — ROI extremamente positivo.';
+                recBox.className = 'recommendation-box';
+            } else if (roi > 200) {
+                recBox.innerHTML = '<strong style="color: #3b82f6;">👍 RECOMENDADO</strong> — ROI forte e justificado.';
+                recBox.className = 'recommendation-box';
+            } else if (roi > 0) {
+                recBox.innerHTML = '<strong style="color: #f59e0b;">⚠️ CONSIDERE</strong> — Positivo, mas retorno mais longo.';
+                recBox.className = 'recommendation-box';
+            } else {
+                recBox.innerHTML = '<strong style="color: #ef4444;">❌ NÃO RECOMENDADO</strong> — ROI negativo.';
+                recBox.className = 'recommendation-box';
+            }
+
+            document.getElementById('roiOutput').classList.remove('hidden');
+        }
+
+        // ==========================================
+        // ONA VISUALIZATION
+        // ==========================================
+
+        function drawONA() {
+            const canvas = document.getElementById('onaCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Clear canvas
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Generate node positions (force-directed simplified)
+            const nodes = AppState.employees.map((emp, idx) => {
+                const angle = (idx / AppState.employees.length) * Math.PI * 2;
+                const baseRadius = 150;
+                const randomRadius = Math.random() * 50;
+
+                return {
+                    id: emp.id,
+                    name: emp.name,
+                    x: canvas.width / 2 + Math.cos(angle) * (baseRadius + randomRadius),
+                    y: canvas.height / 2 + Math.sin(angle) * (baseRadius + randomRadius),
+                    centrality: emp.ona_centrality_score,
+                    burnout: emp.burnout_score,
+                    size: emp.ona_centrality_score / 100 * 25 + 8
+                };
+            });
+
+            // Draw edges (connections)
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.15)';
+            ctx.lineWidth = 1;
+
+            nodes.forEach((node, i) => {
+                // Connect to 3-5 nearest neighbors
+                const distances = nodes
+                    .map((n, j) => ({ node: n, dist: Math.hypot(n.x - node.x, n.y - node.y), j }))
+                    .sort((a, b) => a.dist - b.dist)
+                    .slice(1, 5);
+
+                distances.forEach(({ node: n2 }) => {
+                    ctx.beginPath();
+                    ctx.moveTo(node.x, node.y);
+                    ctx.lineTo(n2.x, n2.y);
+
+                    // Color edge based on both having high burnout
+                    if (node.burnout > 70 && n2.burnout > 70) {
+                        ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
+                    } else {
+                        ctx.strokeStyle = 'rgba(148, 163, 184, 0.1)';
+                    }
+                    ctx.stroke();
+                });
+            });
+
+            // Draw nodes
+            nodes.forEach(node => {
+                // Color based on burnout
+                let fillColor;
+                if (node.burnout < 33) {
+                    fillColor = '#10b981'; // Green
+                } else if (node.burnout < 66) {
+                    fillColor = '#f59e0b'; // Yellow
+                } else {
+                    fillColor = '#ef4444'; // Red
+                }
+
+                // Draw circle
+                ctx.fillStyle = fillColor;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Border for central connectors
+                if (node.centrality > 0.85) {
+                    ctx.strokeStyle = '#fbbf24';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                }
+
+                // Label
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 10px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const initials = node.name.split(' ').map(w => w[0]).join('');
+                ctx.fillText(initials, node.x, node.y);
+            });
+        }
+
+        function populateONATable() {
+            const centralConnectors = AppState.employees
+                .filter(e => e.ona_centrality_score > 0.60)
+                .sort((a, b) => b.ona_centrality_score - a.ona_centrality_score)
+                .slice(0, 8);
+
+            let html = '';
+            centralConnectors.forEach(emp => {
+                let statusBadge = emp.burnout_score < 33 ? 
+                    '<span class="badge badge-success">✅ Seguro</span>' :
+                    emp.burnout_score < 66 ?
+                    '<span class="badge badge-warning">⚠️ Monitor</span>' :
+                    '<span class="badge badge-danger">🔴 Risco</span>';
+
+                html += `
+                    <tr>
+                        <td><strong>${emp.name}</strong></td>
+                        <td>${emp.department}</td>
+                        <td>${(emp.ona_centrality_score * 100).toFixed(0)} / 100</td>
+                        <td>${emp.ona_betweenness} %</td>
+                        <td>${emp.ona_degree}</td>
+                        <td>${emp.burnout_score}</td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('onaTable').innerHTML = html;
+        }
+
+        // ==========================================
+        // BANT WIZARD
+        // ==========================================
+
+        let bantCurrentStep = 1;
+
+        function openBANTModal() {
+            document.getElementById('bantModal').classList.add('active');
+            bantCurrentStep = 1;
+            updateBANTSteps();
+        }
+
+        function closeBANTModal() {
+            document.getElementById('bantModal').classList.remove('active');
+        }
+
+        function updateBANTSteps() {
+            for (let i = 1; i <= 5; i++) {
+                const step = document.getElementById(`bant-step-${i}`);
+                if (i === bantCurrentStep) {
+                    step.classList.remove('hidden');
+                } else {
+                    step.classList.add('hidden');
+                }
+            }
+
+            // Update step indicators
+            let indicators = '';
+            for (let i = 1; i <= 5; i++) {
+                const className = i <= bantCurrentStep ? 'step-dot active' : 'step-dot';
+                indicators += `<div class="${className}"></div>`;
+            }
+            document.getElementById('bantStepIndicator').innerHTML = indicators;
+
+            // Show/hide buttons
+            document.getElementById('bantPrevBtn').style.display = bantCurrentStep > 1 ? 'block' : 'none';
+            document.getElementById('bantNextBtn').style.display = bantCurrentStep < 5 ? 'block' : 'none';
+            document.getElementById('bantCloseBtn').style.display = bantCurrentStep === 5 ? 'none' : 'block';
+
+            if (bantCurrentStep === 5) {
+                document.getElementById('bantNextBtn').textContent = 'Calcular Score →';
+            }
+        }
+
+        function bantNextStep() {
+            if (bantCurrentStep < 5) {
+                bantCurrentStep++;
+                updateBANTSteps();
+            } else {
+                calculateBANT();
+            }
+        }
+
+        function bantPrevStep() {
+            if (bantCurrentStep > 1) {
+                bantCurrentStep--;
+                updateBANTSteps();
+            }
+        }
+
+        function calculateBANT() {
+            const budget = document.querySelector('input[name="budget"]:checked').value;
+            const authority = document.querySelector('input[name="authority"]:checked').value;
+            const turnover = parseFloat(document.getElementById('turnoverNeed').value);
+            const timeline = document.querySelector('input[name="timeline"]:checked').value;
+            const financial = document.querySelector('input[name="financial"]:checked').value;
+
+            let score = 0;
+
+            // Budget scoring (25 points max)
+            score += (budget === 'high') ? 25 : (budget === 'medium') ? 15 : 5;
+
+            // Authority scoring (25 points max)
+            score += (authority === 'vhigh') ? 25 : (authority === 'high') ? 20 : (authority === 'medium') ? 12 : 5;
+
+            // Need scoring (25 points max)
+            score += (turnover >= 25) ? 25 : (turnover >= 15) ? 20 : (turnover >= 10) ? 15 : 10;
+
+            // Timeline scoring (15 points max)
+            score += (timeline === 'vhigh') ? 15 : (timeline === 'high') ? 12 : (timeline === 'medium') ? 8 : 3;
+
+            // Financial scoring (10 points max)
+            score += (financial === 'high') ? 10 : (financial === 'medium') ? 7 : 3;
+
+            const finalScore = (score / 100) * 10;
+
+            document.getElementById('bantScoreValue').textContent = finalScore.toFixed(1);
+
+            const recBox = document.getElementById('bantRecommendationBox');
+            if (finalScore >= 8.5) {
+                recBox.innerHTML = '<strong style="color: #10b981;">✅ GO FOR CLOSE</strong><br><small>Esta é uma oportunidade qualificada. Agende reunião com CFO + Diretor RH.</small>';
+                recBox.className = 'recommendation-box recommendation-go';
+            } else if (finalScore >= 6.5) {
+                recBox.innerHTML = '<strong style="color: #3b82f6;">👍 NURTURE</strong><br><small>Oportunidade com potencial. Desenvolva relacionamento e continue educando.</small>';
+                recBox.className = 'recommendation-box recommendation-nurture';
+            } else if (finalScore >= 4.5) {
+                recBox.innerHTML = '<strong style="color: #f59e0b;">⚠️ EXPLORAR</strong><br><small>Há interesse, mas precisa maturat. Foco em ROI education.</small>';
+                recBox.className = 'recommendation-box recommendation-explore';
+            } else {
+                recBox.innerHTML = '<strong style="color: #ef4444;">❌ PASS</strong><br><small>Não está qualificada agora. Acompanhe em 6 meses.</small>';
+                recBox.className = 'recommendation-box recommendation-pass';
+            }
+
+            // Show result view
+            document.querySelectorAll('.bant-step').forEach(s => s.classList.add('hidden'));
+            document.getElementById('bant-result').classList.remove('hidden');
+            document.getElementById('bantNextBtn').style.display = 'none';
+            document.getElementById('bantPrevBtn').style.display = 'none';
+            document.getElementById('bantCloseBtn').style.display = 'block';
+            document.getElementById('bantCloseBtn').textContent = 'Fechar';
+        }
+
+        // ==========================================
+        // EXPORT PDF
+        // ==========================================
+
+        function exportPDF() {
+            const element = document.querySelector('main');
+            const opt = {
+                margin: 10,
+                filename: 'CoreHuman-Intelligence-Report.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+            alert('✅ PDF exportado com sucesso!');
+        }
+
+        // ==========================================
+        // INITIALIZE APP
+        // ==========================================
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initEngagementChart();
+            initBurnoutChart();
+            initTCWLChart();
+            populateRiskTable();
+            populateONATable();
+            drawONA();
+        });
+    </script>
+</body>
+</html>

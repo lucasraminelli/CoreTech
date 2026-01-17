@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Core Ecosystem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: radial-gradient(circle at top left, #1e293b, #0f172a, #020617);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        .input-glass {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .input-glass:focus {
+            border-color: #06B6D4;
+            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="w-full max-w-md p-8">
+        <div class="glass-card rounded-3xl p-10">
+            <div class="text-center mb-10">
+                <div class="text-4xl text-cyan-400 mb-4">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white tracking-tight">Core Ecosystem</h1>
+                <p class="text-gray-400 text-sm mt-2">Área Restrita ao Cliente</p>
+            </div>
+
+            <form onsubmit="event.preventDefault(); window.location.href='menu.html';">
+                <div class="mb-6">
+                    <label class="block text-gray-300 text-xs font-bold uppercase tracking-wider mb-2">Usuário</label>
+                    <input type="text" class="input-glass w-full px-4 py-3 rounded-xl" placeholder="seu@email.com" required>
+                </div>
+                <div class="mb-8">
+                    <label class="block text-gray-300 text-xs font-bold uppercase tracking-wider mb-2">Senha</label>
+                    <input type="password" class="input-glass w-full px-4 py-3 rounded-xl" placeholder="••••••••" required>
+                </div>
+                
+                <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-4 rounded-xl transition duration-300 transform hover:-translate-y-1 shadow-lg shadow-cyan-900/20">
+                    Acessar Ecossistema
+                </button>
+            </form>
+            
+            <div class="mt-8 text-center">
+                <a href="#" class="text-xs text-gray-500 hover:text-cyan-400 transition">Esqueceu sua senha?</a>
+            </div>
+        </div>
+        <p class="text-center text-gray-600 text-xs mt-8">© 2026 MFGV CoreTech. Todos os direitos reservados.</p>
+    </div>
+</body>
+</html>

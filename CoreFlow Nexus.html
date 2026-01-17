@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoreFlow Nexus — Orquestração de Fluxo de Trabalho</title>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Design System Colors - Fiel ao CoreHuman */
+        :root {
+            --primary-dark: #0F172A;
+            --primary-darker: #0A0E1A;
+            --accent-green: #10B981;
+            --accent-green-dark: #059669;
+            --accent-green-light: #34D399;
+            --text-primary: #FFFFFF;
+            --text-secondary: #9CA3AF;
+            --text-tertiary: #6B7280;
+            --border-color: #1F2937;
+            --border-light: #374151;
+            --red-danger: #EF4444;
+            --red-critical: #DC2626;
+            --yellow-warning: #FBBF24;
+            --card-bg: rgba(31, 41, 55, 0.5);
+            --card-bg-hover: rgba(31, 41, 55, 0.8);
+        }
+
+        html, body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: linear-gradient(135deg, var(--primary-darker) 0%, var(--primary-dark) 100%);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Main Layout */
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary-darker) 100%);
+            border-right: 1px solid var(--border-color);
+            padding: 24px 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header i {
+            font-size: 28px;
+            color: var(--accent-green);
+        }
+
+        .sidebar-header h1 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .menu-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-item:hover {
+            background: var(--card-bg);
+            color: var(--accent-green);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(90deg, var(--accent-green) 0%, var(--accent-green-dark) 100%);
+            color: var(--primary-dark);
+            font-weight: 600;
+            border: 1px solid var(--accent-green-light);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 32px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header-date {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: 1px solid var(--border-light);
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn:hover {
+            background: var(--card-bg-hover);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--accent-green) 0%, var(--accent-green-dark) 100%);
+            border: none;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-danger {
+            background: var(--red-danger);
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background: var(--red-critical);
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+            display: none;
+        }
+
+        .content.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Dashboard Styles */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            background: var(--card-bg-hover);
+            border-color: var(--accent-green);
+            transform: translateY(-4px);
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent-green);
+            margin-bottom: 8px;
+        }
+
+        .kpi-subtext {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        /* Charts */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            min-height: 300px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-input,
+        .form-select {
+            padding: 10px 12px;
+            background: rgba(31, 41, 55, 0.6);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent-green);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        /* Kanban Board */
+        .kanban-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            min-height: 600px;
+        }
+
+        .kanban-column {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .kanban-header {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kanban-header-count {
+            background: var(--accent-green);
+            color: var(--primary-dark);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .ticket-card {
+            background: rgba(31, 41, 55, 0.7);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            cursor: move;
+            transition: all 0.3s ease;
+        }
+
+        .ticket-card:hover {
+            background: rgba(31, 41, 55, 0.9);
+            border-color: var(--accent-green);
+            transform: translateY(-2px);
+        }
+
+        .ticket-card.critical {
+            border-left: 4px solid var(--red-danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .ticket-card.high {
+            border-left: 4px solid var(--yellow-warning);
+            background: rgba(251, 191, 36, 0.05);
+        }
+
+        .ticket-card.medium {
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .ticket-card.low {
+            border-left: 4px solid var(--text-tertiary);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .ticket-id {
+            font-size: 11px;
+            color: var(--accent-green);
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .ticket-priority {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .ticket-priority.critical {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--red-danger);
+        }
+
+        .ticket-priority.high {
+            background: rgba(251, 191, 36, 0.2);
+            color: var(--yellow-warning);
+        }
+
+        .ticket-priority.medium {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+        }
+
+        .ticket-priority.low {
+            background: rgba(107, 114, 128, 0.2);
+            color: var(--text-tertiary);
+        }
+
+        .ticket-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .ticket-meta {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .ticket-sla {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 8px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .ticket-sla.warning {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--red-danger);
+        }
+
+        .sla-timer {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+        }
+
+        .sla-timer.critical {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .ticket-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 6px 8px;
+            background: var(--accent-green);
+            color: var(--primary-dark);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--accent-green-light);
+            transform: scale(1.02);
+        }
+
+        .action-btn.secondary {
+            background: var(--border-light);
+            color: var(--text-primary);
+        }
+
+        .action-btn.secondary:hover {
+            background: var(--border-color);
+        }
+
+        /* Activity Feed */
+        .activity-feed {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-time {
+            color: var(--text-secondary);
+            font-size: 11px;
+        }
+
+        .activity-text {
+            color: var(--text-primary);
+            margin-top: 4px;
+        }
+
+        /* Calculator Styles */
+        .calculator-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .calculator-input-group {
+            margin-bottom: 24px;
+        }
+
+        .calculator-result {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.1));
+            border: 2px solid var(--red-danger);
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            margin-top: 32px;
+        }
+
+        .calculator-result-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .calculator-result-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--red-danger);
+            font-family: 'Courier New', monospace;
+            margin-bottom: 8px;
+        }
+
+        .calculator-result-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-green);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kanban-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+                padding: 16px 12px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kanban-container {
+                grid-template-columns: 1fr;
+                grid-template-columns: repeat(3, minmax(250px, 1fr));
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-cube"></i>
+                <h1>CoreFlow Nexus</h1>
+            </div>
+            
+            <div class="sidebar-menu">
+                <div class="menu-item active" onclick="switchView('dashboard')">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Control Tower</span>
+                </div>
+                <div class="menu-item" onclick="switchView('novo-nexus')">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Novo Nexus</span>
+                </div>
+                <div class="menu-item" onclick="switchView('kanban')">
+                    <i class="fas fa-columns"></i>
+                    <span>Kanban Operacional</span>
+                </div>
+                <div class="menu-item" onclick="switchView('calculator')">
+                    <i class="fas fa-calculator"></i>
+                    <span>Calculadora Hidden Factory</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div>
+                    <div class="header-title" id="viewTitle">Control Tower</div>
+                    <div class="header-date" id="currentDate"></div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn">
+                        <i class="fas fa-bell"></i> Alertas
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard View -->
+            <div id="dashboard" class="content active">
+                <!-- KPI Cards -->
+                <div class="dashboard-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-label">
+                            <i class="fas fa-hourglass-half"></i> Fricção Eliminada
+                        </div>
+                        <div class="kpi-value" id="kpiHoras">0</div>
+                        <div class="kpi-subtext">Horas Recuperadas (Total)</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-label">
+                            <i class="fas fa-piggy-bank"></i> Custo Evitado
+                        </div>
+                        <div class="kpi-value" id="kpiCusto">R$ 0</div>
+                        <div class="kpi-subtext">Valor econômico recuperado</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-label">
+                            <i class="fas fa-check-circle"></i> SLA Médio
+                        </div>
+                        <div class="kpi-value" id="kpiSLA">0%</div>
+                        <div class="kpi-subtext">Tickets dentro do SLA</div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-title">
+                            <i class="fas fa-chart-bar"></i> Gargalos por Departamento
+                        </div>
+                        <canvas id="departmentChart"></canvas>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-title">
+                            <i class="fas fa-line-chart"></i> Tempo de Resolução (Semanal)
+                        </div>
+                        <canvas id="resolutionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Activity Feed -->
+                <div class="activity-feed">
+                    <div class="chart-title">
+                        <i class="fas fa-stream"></i> Feed de Atividade
+                    </div>
+                    <div id="activityFeed"></div>
+                </div>
+            </div>
+
+            <!-- Novo Nexus View -->
+            <div id="novo-nexus" class="content">
+                <div class="calculator-container" style="max-width: 100%;">
+                    <h2 style="margin-bottom: 24px; font-size: 20px;">
+                        <i class="fas fa-lightbulb"></i> Criar Novo Ticket
+                    </h2>
+
+                    <div class="form-grid" style="grid-template-columns: 1fr;">
+                        <div class="form-group">
+                            <label class="form-label">O que você precisa?</label>
+                            <select id="ticketDepartment" class="form-select">
+                                <option value="">-- Selecione --</option>
+                                <option value="Produção">Produção</option>
+                                <option value="Manutenção">Manutenção</option>
+                                <option value="Financeiro">Financeiro</option>
+                                <option value="RH">RH</option>
+                                <option value="Vendas">Vendas</option>
+                                <option value="Qualidade">Qualidade</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Para quem? (Departamento Destino)</label>
+                            <select id="ticketSourceDept" class="form-select">
+                                <option value="">-- Selecione --</option>
+                                <option value="Produção">Produção</option>
+                                <option value="Manutenção">Manutenção</option>
+                                <option value="Financeiro">Financeiro</option>
+                                <option value="RH">RH</option>
+                                <option value="Vendas">Vendas</option>
+                                <option value="Qualidade">Qualidade</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Descrição Rápida</label>
+                            <input type="text" id="ticketTitle" class="form-input" placeholder="Ex: Parada de linha 04">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Prioridade</label>
+                            <select id="ticketPriority" class="form-select">
+                                <option value="Baixa">Baixa</option>
+                                <option value="Média">Média</option>
+                                <option value="Crítica">Crítica</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Alerta de SLA para Crítica -->
+                    <div id="criticalAlert" style="display: none; margin: 24px 0;">
+                        <div style="background: rgba(239, 68, 68, 0.2); border: 2px solid var(--red-danger); border-radius: 8px; padding: 16px; border-left: 4px solid var(--red-danger);">
+                            <div style="color: var(--red-danger); font-weight: 700; margin-bottom: 8px;">
+                                <i class="fas fa-exclamation-triangle"></i> ALERTA DE SLA CRÍTICO
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 13px;">
+                                Isso acionará um alerta de SLA de <strong>2 horas</strong> para a Diretoria. A resposta deve ser imediata!
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="createNewTicket()" style="margin-top: 24px; padding: 12px 32px; font-size: 14px; width: 100%;">
+                        <i class="fas fa-send"></i> Criar Ticket
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kanban View -->
+            <div id="kanban" class="content">
+                <h2 style="margin-bottom: 24px; font-size: 20px;">
+                    <i class="fas fa-layer-group"></i> Kanban Operacional
+                </h2>
+                
+                <div class="kanban-container">
+                    <div class="kanban-column">
+                        <div class="kanban-header">
+                            <span>📥 A Fazer</span>
+                            <span class="kanban-header-count" id="countTodo">0</span>
+                        </div>
+                        <div id="kanban-todo" class="kanban-body"></div>
+                    </div>
+
+                    <div class="kanban-column">
+                        <div class="kanban-header">
+                            <span>⚙️ Em Andamento</span>
+                            <span class="kanban-header-count" id="countDoing">0</span>
+                        </div>
+                        <div id="kanban-doing" class="kanban-body"></div>
+                    </div>
+
+                    <div class="kanban-column">
+                        <div class="kanban-header">
+                            <span>✅ Resolvido</span>
+                            <span class="kanban-header-count" id="countDone">0</span>
+                        </div>
+                        <div id="kanban-done" class="kanban-body"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculator View -->
+            <div id="calculator" class="content">
+                <h2 style="margin-bottom: 32px; font-size: 20px;">
+                    <i class="fas fa-chart-line"></i> Calculadora de Hidden Factory
+                </h2>
+
+                <div class="calculator-container">
+                    <div class="calculator-input-group">
+                        <label class="form-label">Número de Funcionários</label>
+                        <input type="number" id="calcEmployees" class="form-input" placeholder="Ex: 150" value="150" oninput="recalculateHiddenFactory()">
+                    </div>
+
+                    <div class="calculator-input-group">
+                        <label class="form-label">Salário Médio Mensal (R$)</label>
+                        <input type="number" id="calcSalary" class="form-input" placeholder="Ex: 3500" value="3500" oninput="recalculateHiddenFactory()">
+                    </div>
+
+                    <div class="calculator-input-group">
+                        <label class="form-label">Mensagens WhatsApp/dia por Pessoa</label>
+                        <input type="number" id="calcMessages" class="form-input" placeholder="Ex: 25" value="25" oninput="recalculateHiddenFactory()">
+                    </div>
+
+                    <div class="calculator-result">
+                        <div class="calculator-result-label">Custo Anual da Desorganização</div>
+                        <div class="calculator-result-value" id="calcResult">R$ 0</div>
+                        <div class="calculator-result-description">
+                            Cálculo: (Msgs × 2min × Custo/min × 252 dias × Funcionários)
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 32px; padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border-left: 4px solid var(--accent-green);">
+                        <div style="font-weight: 600; margin-bottom: 8px; color: var(--accent-green);">
+                            <i class="fas fa-info-circle"></i> Cenário: Manufatura Típica
+                        </div>
+                        <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                            Com <strong>CoreFlow Nexus</strong>, você reduz esta desorganização em <strong>40-50%</strong>, 
+                            economizando <strong>R$ 300k a R$ 500k por ano</strong> apenas em eficiência de comunicação.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // NEXUS STATE - Backend Reativo em JavaScript
+        // ============================================
+        const NexusState = {
+            tickets: [
+                {
+                    id: 'CRIT-2025-0001',
+                    requestor: 'Operário Chão',
+                    source_dept: 'Produção',
+                    dest_dept: 'Manutenção',
+                    title: 'Parada de Linha 04',
+                    priority: 'Crítica',
+                    status: 'todo',
+                    created_at: new Date(Date.now() - 5 * 60000),
+                    sla_minutes: 30,
+                    cost_friction: 50000
+                },
+                {
+                    id: 'MED-2025-0002',
+                    requestor: 'Gerente Financeiro',
+                    source_dept: 'Financeiro',
+                    dest_dept: 'Produção',
+                    title: 'Aprovação de Orçamento MP',
+                    priority: 'Média',
+                    status: 'todo',
+                    created_at: new Date(Date.now() - 10 * 60000),
+                    sla_minutes: 240,
+                    cost_friction: 15000
+                },
+                {
+                    id: 'LOW-2025-0003',
+                    requestor: 'RH',
+                    source_dept: 'RH',
+                    dest_dept: 'RH',
+                    title: 'Solicitação de Crachá',
+                    priority: 'Baixa',
+                    status: 'todo',
+                    created_at: new Date(Date.now() - 60 * 60000),
+                    sla_minutes: 480,
+                    cost_friction: 500
+                }
+            ],
+            stats: {
+                total_hours_saved: 0,
+                total_cost_avoided: 0,
+                sla_compliance_pct: 0
+            },
+            config: {
+                employees: 150,
+                avg_salary: 3500,
+                msgs_per_day: 25
+            }
+        };
+
+        // ============================================
+        // UI STATE MANAGEMENT
+        // ============================================
+        let currentView = 'dashboard';
+        let chartInstances = {};
+
+        function switchView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.menu-item').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Show selected view
+            document.getElementById(viewName).classList.add('active');
+            event.currentTarget.classList.add('active');
+            currentView = viewName;
+
+            // Update header
+            const titles = {
+                'dashboard': 'Control Tower',
+                'novo-nexus': 'Novo Nexus',
+                'kanban': 'Kanban Operacional',
+                'calculator': 'Calculadora Hidden Factory'
+            };
+            document.getElementById('viewTitle').textContent = titles[viewName];
+
+            // Reinitialize charts if dashboard
+            if (viewName === 'dashboard') {
+                setTimeout(() => {
+                    initCharts();
+                }, 100);
+            }
+
+            // Re-render kanban if needed
+            if (viewName === 'kanban') {
+                renderKanban();
+            }
+        }
+
+        // ============================================
+        // TICKET OPERATIONS
+        // ============================================
+        function createNewTicket() {
+            const dept = document.getElementById('ticketDepartment').value;
+            const sourceDept = document.getElementById('ticketSourceDept').value;
+            const title = document.getElementById('ticketTitle').value;
+            const priority = document.getElementById('ticketPriority').value;
+
+            if (!dept || !sourceDept || !title) {
+                alert('Por favor, preencha todos os campos');
+                return;
+            }
+
+            const newTicket = {
+                id: generateTicketId(priority),
+                requestor: 'Sistema',
+                source_dept: sourceDept,
+                dest_dept: dept,
+                title: title,
+                priority: priority,
+                status: 'todo',
+                created_at: new Date(),
+                sla_minutes: getSLAMinutes(priority),
+                cost_friction: Math.random() * 50000
+            };
+
+            NexusState.tickets.push(newTicket);
+            
+            // Clear form
+            document.getElementById('ticketDepartment').value = '';
+            document.getElementById('ticketSourceDept').value = '';
+            document.getElementById('ticketTitle').value = '';
+            document.getElementById('ticketPriority').value = 'Média';
+            document.getElementById('criticalAlert').style.display = 'none';
+
+            // Show success and go to kanban
+            alert('Ticket criado com sucesso! ID: ' + newTicket.id);
+            switchView('kanban');
+            updateAllViews();
+        }
+
+        function generateTicketId(priority) {
+            const prefix = priority === 'Crítica' ? 'CRIT' : priority === 'Média' ? 'MED' : 'LOW';
+            const num = Math.floor(Math.random() * 9000) + 1000;
+            return `${prefix}-2025-${num}`;
+        }
+
+        function getSLAMinutes(priority) {
+            const slas = {
+                'Crítica': 30,
+                'Média': 240,
+                'Baixa': 480
+            };
+            return slas[priority] || 240;
+        }
+
+        function assignTicket(ticketId) {
+            const ticket = NexusState.tickets.find(t => t.id === ticketId);
+            if (ticket && ticket.status === 'todo') {
+                ticket.status = 'doing';
+                updateAllViews();
+                logActivity(`${ticket.requestor} (${ticket.source_dept}) assumiu chamado para ${ticket.dest_dept} - ${ticket.title}`);
+            }
+        }
+
+        function completeTicket(ticketId) {
+            const ticket = NexusState.tickets.find(t => t.id === ticketId);
+            if (ticket && ticket.status === 'doing') {
+                ticket.status = 'done';
+                
+                // Update stats
+                NexusState.stats.total_cost_avoided += ticket.cost_friction;
+                NexusState.stats.total_hours_saved += (ticket.sla_minutes / 60);
+                
+                updateAllViews();
+                logActivity(`Ticket ${ticket.id} resolvido! Custo evitado: R$ ${formatCurrency(ticket.cost_friction)}`);
+            }
+        }
+
+        // ============================================
+        // ACTIVITY LOG
+        // ============================================
+        let activityLog = [];
+
+        function logActivity(message) {
+            const activity = {
+                message: message,
+                timestamp: new Date(),
+                icon: 'fas fa-circle-check'
+            };
+            activityLog.unshift(activity);
+            if (activityLog.length > 20) activityLog.pop();
+            renderActivityFeed();
+        }
+
+        function renderActivityFeed() {
+            const feed = document.getElementById('activityFeed');
+            feed.innerHTML = activityLog.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-time">
+                        <i class="fas fa-history"></i> ${formatTime(activity.timestamp)}
+                    </div>
+                    <div class="activity-text">
+                        <i class="${activity.icon}" style="color: var(--accent-green); margin-right: 8px;"></i>
+                        ${activity.message}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============================================
+        // KANBAN RENDERING
+        // ============================================
+        function renderKanban() {
+            const columns = {
+                'todo': 'kanban-todo',
+                'doing': 'kanban-doing',
+                'done': 'kanban-done'
+            };
+
+            // Clear columns
+            Object.values(columns).forEach(col => {
+                document.getElementById(col).innerHTML = '';
+            });
+
+            // Update counts
+            const counts = { todo: 0, doing: 0, done: 0 };
+            NexusState.tickets.forEach(ticket => {
+                counts[ticket.status]++;
+            });
+            document.getElementById('countTodo').textContent = counts.todo;
+            document.getElementById('countDoing').textContent = counts.doing;
+            document.getElementById('countDone').textContent = counts.done;
+
+            // Render tickets
+            NexusState.tickets.forEach(ticket => {
+                const card = createTicketCard(ticket);
+                document.getElementById(columns[ticket.status]).appendChild(card);
+            });
+        }
+
+        function createTicketCard(ticket) {
+            const minutesElapsed = (Date.now() - ticket.created_at.getTime()) / 60000;
+            const minutesRemaining = ticket.sla_minutes - minutesElapsed;
+            const isWarning = minutesRemaining < 30 && ticket.status !== 'done';
+            const isCritical = minutesRemaining < 5 && ticket.status !== 'done';
+
+            const card = document.createElement('div');
+            card.className = `ticket-card ${ticket.priority.toLowerCase()}`;
+            
+            if (isWarning) {
+                card.style.borderLeft = '4px solid var(--red-danger)';
+                card.style.boxShadow = '0 0 8px rgba(239, 68, 68, 0.3)';
+            }
+
+            const timerClass = isCritical ? 'sla-timer critical' : 'sla-timer';
+            const timerColor = isWarning ? 'color: var(--red-danger);' : '';
+
+            card.innerHTML = `
+                <div class="ticket-header">
+                    <div class="ticket-id">${ticket.id}</div>
+                    <span class="ticket-priority ${ticket.priority.toLowerCase()}">
+                        ${ticket.priority}
+                    </span>
+                </div>
+                <div class="ticket-title">${ticket.title}</div>
+                <div class="ticket-meta">
+                    <i class="fas fa-building"></i> ${ticket.source_dept} → ${ticket.dest_dept}
+                </div>
+                <div class="ticket-sla ${isWarning ? 'warning' : ''}">
+                    <i class="fas fa-clock"></i>
+                    <span class="${timerClass}" style="${timerColor}">
+                        ${formatSLATime(minutesRemaining)}
+                    </span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 8px;">
+                    Criado ${formatTimeAgo(ticket.created_at)}
+                </div>
+                <div class="ticket-actions">
+                    ${ticket.status === 'todo' ? `
+                        <button class="action-btn" onclick="assignTicket('${ticket.id}')">
+                            <i class="fas fa-hand-paper"></i> Assumir
+                        </button>
+                    ` : ''}
+                    ${ticket.status === 'doing' ? `
+                        <button class="action-btn" onclick="completeTicket('${ticket.id}')">
+                            <i class="fas fa-check"></i> Concluir
+                        </button>
+                    ` : ''}
+                    ${ticket.status === 'done' ? `
+                        <button class="action-btn secondary" disabled>
+                            <i class="fas fa-check-double"></i> Fechado
+                        </button>
+                    ` : ''}
+                </div>
+            `;
+
+            return card;
+        }
+
+        // ============================================
+        // DASHBOARD CHARTS
+        // ============================================
+        function initCharts() {
+            // Destroy existing charts
+            Object.values(chartInstances).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+
+            // Department bottleneck chart
+            const deptData = {};
+            NexusState.tickets.forEach(ticket => {
+                if (!deptData[ticket.dest_dept]) {
+                    deptData[ticket.dest_dept] = { open: 0, total: 0 };
+                }
+                deptData[ticket.dest_dept].total++;
+                if (ticket.status !== 'done') deptData[ticket.dest_dept].open++;
+            });
+
+            const ctx1 = document.getElementById('departmentChart').getContext('2d');
+            chartInstances.dept = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(deptData),
+                    datasets: [{
+                        label: 'Tickets Abertos',
+                        data: Object.values(deptData).map(d => d.open),
+                        backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                        borderColor: 'var(--red-danger)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }, {
+                        label: 'Total',
+                        data: Object.values(deptData).map(d => d.total),
+                        backgroundColor: 'rgba(16, 185, 129, 0.3)',
+                        borderColor: 'var(--accent-green)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { labels: { color: 'var(--text-primary)' } }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: 'var(--text-secondary)' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: 'var(--text-secondary)' }
+                        }
+                    }
+                }
+            });
+
+            // Resolution time trend
+            const weekDays = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'];
+            const resolutionTimes = [24, 28, 22, 19, 21, 18, 20]; // Demo data
+
+            const ctx2 = document.getElementById('resolutionChart').getContext('2d');
+            chartInstances.resolution = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: weekDays,
+                    datasets: [{
+                        label: 'Tempo Médio (minutos)',
+                        data: resolutionTimes,
+                        borderColor: 'var(--accent-green)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: 'var(--accent-green)',
+                        pointBorderColor: '#fff',
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { labels: { color: 'var(--text-primary)' } }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: 'var(--text-secondary)' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: 'var(--text-secondary)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ============================================
+        // CALCULATOR
+        // ============================================
+        function recalculateHiddenFactory() {
+            const employees = parseFloat(document.getElementById('calcEmployees').value) || 0;
+            const salary = parseFloat(document.getElementById('calcSalary').value) || 0;
+            const messages = parseFloat(document.getElementById('calcMessages').value) || 0;
+
+            // Cálculo: (Msgs × 2min × CustoMinuto × 252 dias × Funcionarios)
+            const minutesPerDay = messages * 2;
+            const costPerMinute = (salary / 252 / 480); // 252 dias úteis, 480 min por dia
+            const annualCost = minutesPerDay * costPerMinute * 252 * employees;
+
+            document.getElementById('calcResult').textContent = formatCurrency(annualCost);
+        }
+
+        // ============================================
+        // DASHBOARD UPDATES
+        // ============================================
+        function updateDashboardKPIs() {
+            // Calculate SLA compliance
+            const totalTickets = NexusState.tickets.filter(t => t.status === 'done').length;
+            const completedOnTime = NexusState.tickets.filter(t => {
+                if (t.status !== 'done') return false;
+                const elapsedMinutes = (Date.now() - t.created_at.getTime()) / 60000;
+                return elapsedMinutes <= t.sla_minutes;
+            }).length;
+
+            const slaCompliance = totalTickets > 0 ? Math.round((completedOnTime / totalTickets) * 100) : 0;
+
+            document.getElementById('kpiHoras').textContent = NexusState.stats.total_hours_saved.toFixed(1);
+            document.getElementById('kpiCusto').textContent = formatCurrency(NexusState.stats.total_cost_avoided);
+            document.getElementById('kpiSLA').textContent = slaCompliance + '%';
+        }
+
+        function updateAllViews() {
+            updateDashboardKPIs();
+            renderKanban();
+            if (currentView === 'dashboard') {
+                initCharts();
+            }
+        }
+
+        // ============================================
+        // PRIORITY ALERT LISTENER
+        // ============================================
+        document.getElementById('ticketPriority')?.addEventListener('change', function() {
+            const alert = document.getElementById('criticalAlert');
+            if (this.value === 'Crítica') {
+                alert.style.display = 'block';
+            } else {
+                alert.style.display = 'none';
+            }
+        });
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+                minimumFractionDigits: 0
+            }).format(value);
+        }
+
+        function formatTime(date) {
+            return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function formatTimeAgo(date) {
+            const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+            if (seconds < 60) return 'agora';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes}m atrás`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours}h atrás`;
+            const days = Math.floor(hours / 24);
+            return `${days}d atrás`;
+        }
+
+        function formatSLATime(minutes) {
+            if (minutes < 0) return '⏰ SLA VENCIDO';
+            const hours = Math.floor(minutes / 60);
+            const mins = Math.floor(minutes % 60);
+            const secs = Math.floor((minutes % 1) * 60);
+            return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function updateDate() {
+            const now = new Date();
+            const formatted = now.toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('currentDate').textContent = formatted;
+        }
+
+        // ============================================
+        // LIVE TIMERS
+        // ============================================
+        setInterval(() => {
+            if (currentView === 'kanban') {
+                renderKanban();
+            }
+            updateDate();
+        }, 1000);
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDate();
+            updateDashboardKPIs();
+            renderKanban();
+            initCharts();
+            recalculateHiddenFactory();
+            logActivity('Sistema iniciado - Bem-vindo ao CoreFlow Nexus!');
+        });
+    </script>
+</body>
+</html>
