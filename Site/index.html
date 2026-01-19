@@ -1,0 +1,2348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MFGV CoreTech - Engenharia Organizacional e Inteligência de Capital Humano Premium">
+    <title>MFGV CoreTech | Transforme Dados em Resultados</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ========================================
+           DESIGN SYSTEM
+           ======================================== */
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #141829;
+            --bg-tertiary: #1e2241;
+            --bg-accent: #2a3456;
+            --accent-cyan: #00d4ff;
+            --accent-purple: #7b2cbf;
+            --accent-pink: #ff006e;
+            --accent-green: #00ff95;
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0e0;
+            --text-tertiary: #a0a0b0;
+            --border-color: rgba(0, 212, 255, 0.1);
+            --gradient-main: linear-gradient(135deg, #00d4ff 0%, #7b2cbf 100%);
+            --gradient-alt: linear-gradient(135deg, #7b2cbf 0%, #ff006e 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', Poppins;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ========================================
+           ANIMATED BACKGROUND
+           ======================================== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(123, 44, 191, 0.1) 0%, transparent 50%);
+            animation: gradient-shift 20s ease infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.1); }
+        }
+
+        main {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ========================================
+           HEADER / NAVIGATION
+           ======================================== */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 999;
+            background: rgba(10, 14, 39, 0.8);
+            backdrop-filter: blur(30px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.2rem 0;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            background: rgba(10, 14, 39, 0.95);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-wrapper {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-brand {
+            font-family: 'Poppins', Poppins;
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        nav.main-nav {
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--text-tertiary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-cyan);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--accent-cyan);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .btn-header {
+            background: var(--gradient-main);
+            color: var(--bg-primary);
+            border: none;
+            padding: 0.75rem 1.8rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-header:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.3);
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        /* ========================================
+           HERO SECTION
+           ======================================== */
+        .hero {
+            padding-top: 0;
+            padding-bottom: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background: url('https://user-gen-media-assets.s3.amazonaws.com/gemini_images/c2cf5eeb-80ea-4067-bba0-d98919fa8b62.png') center/cover no-repeat;
+            background-attachment: fixed;
+            z-index: 0;
+            animation: zoom-in 10s ease-in-out infinite;
+        }
+
+        @keyframes zoom-in {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1); }
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(10, 14, 39, 0.9) 0%, rgba(10, 14, 39, 0.3) 50%, transparent 100%);
+            z-index: 1;
+        }
+
+        .hero-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            height: 100vh;
+        }
+
+        .hero-content h1 {
+            font-family: 'Poppins', Poppins;
+            font-size: clamp(2.0rem, 5vw, 6rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            animation: slide-up 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            text-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes slide-up {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-content h1 .highlight {
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-content p {
+            font-size: 1.15rem;
+            color: var(--text-tertiary);
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+            animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+        }
+
+        .btn-primary {
+            background: var(--gradient-main);
+            color: var(--bg-primary);
+            border: none;
+            padding: 1.2rem 2.8rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.4s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 50px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent-cyan);
+            border: 2px solid var(--accent-cyan);
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 212, 255, 0.1);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .hero-image {
+            position: relative;
+            animation: slide-in-right 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+        }
+
+        @keyframes slide-in-right {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hero-image-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 9/10;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(123, 44, 191, 0.1));
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-image-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(0, 0, 0, 0.2) 100%);
+            z-index: 2;
+        }
+
+        .hero-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            animation: subtle-zoom 20s ease-in-out infinite;
+        }
+
+        @keyframes subtle-zoom {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .floating-card {
+            position: absolute;
+            background: rgba(10, 14, 39, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            animation: float-up 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+        }
+
+        @keyframes float-up {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-1 {
+            bottom: 2rem;
+            right: 1rem;
+            max-width: 220px;
+            animation: bounce-float 6s ease-in-out infinite;
+        }
+
+        @keyframes bounce-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .card-1 h4 {
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .card-1 p {
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+        }
+
+        /* ========================================
+           STATS SECTION
+           ======================================== */
+        .stats {
+            background: linear-gradient(180deg, rgba(0, 212, 255, 0.05) 0%, transparent 100%);
+            padding: 2rem 2rem 5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stats-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            animation: fade-in-up 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-item:nth-child(1) { animation-delay: 0.1s; }
+        .stat-item:nth-child(2) { animation-delay: 0.2s; }
+        .stat-item:nth-child(3) { animation-delay: 0.3s; }
+        .stat-item:nth-child(4) { animation-delay: 0.4s; }
+
+        .stat-item:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.05);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0, 212, 255, 0.15);
+        }
+
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        /* ========================================
+           FEATURES SECTION
+           ======================================== */
+        .features-section {
+            padding: 8rem 2rem;
+            background: linear-gradient(180deg, transparent 0%, rgba(0, 212, 255, 0.05) 100%);
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .section-label {
+            display: inline-block;
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--accent-cyan);
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            letter-spacing: 0.1em;
+        }
+
+        .section-title {
+            font-family: 'Poppins', serif;
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .section-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-tertiary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        .features-grid {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            padding: 3rem;
+            border-radius: 16px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            animation: fade-in 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.2s; }
+        .feature-card:nth-child(5) { animation-delay: 0.3s; }
+        .feature-card:nth-child(6) { animation-delay: 0.4s; }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-main);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.03);
+            transform: translateY(-12px);
+            box-shadow: 0 30px 60px rgba(0, 212, 255, 0.1);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(123, 44, 191, 0.2));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.2) rotate(10deg);
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(123, 44, 191, 0.3));
+        }
+
+        .feature-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .feature-description {
+            font-size: 0.95rem;
+            color: var(--text-tertiary);
+            line-height: 1.7;
+        }
+
+        /* ========================================
+           SOLUTIONS SECTION
+           ======================================== */
+        .solutions-section {
+            padding: 8rem 2rem;
+            background: linear-gradient(135deg, rgba(123, 44, 191, 0.05) 0%, rgba(0, 212, 255, 0.05) 100%);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .solutions-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .solution-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fade-in 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        .solution-card:nth-child(1) { animation-delay: 0.1s; }
+        .solution-card:nth-child(2) { animation-delay: 0.2s; }
+        .solution-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .solution-number {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, rgba(0, 212, 255, 0.2), rgba(123, 44, 191, 0.2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .solution-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .solution-description {
+            color: var(--text-tertiary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .solution-list {
+            list-style: none;
+        }
+
+        .solution-list li {
+            color: var(--text-tertiary);
+            padding: 0.6rem 0 0.6rem 1.5rem;
+            position: relative;
+            font-size: 0.95rem;
+        }
+
+        .solution-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+
+        .solution-card:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.03);
+            transform: translateY(-12px);
+            box-shadow: 0 30px 60px rgba(0, 212, 255, 0.15);
+        }
+
+        /* ========================================
+           PRICING SECTION
+           ======================================== */
+        .pricing-section {
+            padding: 8rem 2rem;
+            background: linear-gradient(180deg, rgba(0, 212, 255, 0.05) 0%, transparent 100%);
+        }
+
+        .pricing-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            transition: all 0.4s ease;
+            position: relative;
+            animation: fade-in 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        .pricing-card:nth-child(1) { animation-delay: 0.1s; }
+        .pricing-card:nth-child(2) { animation-delay: 0.2s; }
+        .pricing-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .pricing-card.featured {
+            border-color: var(--accent-cyan);
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(123, 44, 191, 0.05));
+            transform: scale(1.05);
+        }
+
+        .pricing-card:hover {
+            border-color: var(--accent-cyan);
+            transform: scale(1.05);
+            box-shadow: 0 30px 60px rgba(0, 212, 255, 0.15);
+        }
+
+        .pricing-badge {
+            display: inline-block;
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--accent-cyan);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .pricing-description {
+            font-size: 0.9rem;
+            color: var(--text-tertiary);
+            margin-bottom: 1.5rem;
+        }
+
+        .pricing-value {
+            display: flex;
+            align-items: baseline;
+            gap: 0.3rem;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-currency {
+            font-size: 1rem;
+            color: var(--text-tertiary);
+        }
+
+        .pricing-amount {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .pricing-period {
+            font-size: 0.9rem;
+            color: var(--text-tertiary);
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features li {
+            color: var(--text-tertiary);
+            padding: 0.7rem 0 0.7rem 1.8rem;
+            position: relative;
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+
+        .pricing-cta {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--accent-cyan);
+            background: transparent;
+            color: var(--accent-cyan);
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .pricing-card.featured .pricing-cta {
+            background: var(--gradient-main);
+            color: var(--bg-primary);
+            border-color: var(--gradient-main);
+        }
+
+        .pricing-cta:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        /* ========================================
+           TESTIMONIALS SECTION
+           ======================================== */
+        .testimonials-section {
+            padding: 8rem 2rem;
+            background: linear-gradient(180deg, rgba(123, 44, 191, 0.05) 0%, transparent 100%);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .testimonials-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2.5rem;
+            transition: all 0.4s ease;
+            animation: fade-in 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        .testimonial-card:nth-child(1) { animation-delay: 0.1s; }
+        .testimonial-card:nth-child(2) { animation-delay: 0.2s; }
+        .testimonial-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .testimonial-card:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.03);
+            transform: translateY(-8px);
+        }
+
+        .testimonial-stars {
+            color: #ffc107;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .testimonial-text {
+            font-size: 1rem;
+            color: var(--text-tertiary);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--bg-primary);
+        }
+
+        .author-info h4 {
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .author-info p {
+            color: var(--text-tertiary);
+            font-size: 0.85rem;
+        }
+
+        /* ========================================
+           CTA SECTION
+           ======================================== */
+        .cta-section {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(123, 44, 191, 0.1) 100%);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .cta-container {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .cta-content h2 {
+            font-family: 'Poppins', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-content p {
+            font-size: 1.15rem;
+            color: var(--text-tertiary);
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+        }
+
+        .cta-buttons-group {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ========================================
+           FOOTER
+           ======================================== */
+        footer {
+            padding: 5rem 2rem 2rem;
+            background: rgba(10, 14, 39, 0.5);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-column h3 {
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            color: var(--text-primary);
+        }
+
+        .footer-column a,
+        .footer-column p {
+            color: var(--text-tertiary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            margin-bottom: 0.8rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-column a:hover {
+            color: var(--accent-cyan);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border-color);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .footer-copyright {
+            color: var(--text-tertiary);
+            font-size: 0.9rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-social a {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--accent-cyan);
+            transition: all 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+            transform: translateY(-4px);
+        }
+
+        /* ========================================
+           MODAL / PAGE OVERLAY
+           ======================================== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fade-in 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slide-up 0.3s ease;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--accent-cyan);
+        }
+
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            margin-top: 1rem;
+        }
+
+        .modal-description {
+            color: var(--text-tertiary);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.9rem;
+            color: var(--text-primary);
+            font-family: 'Inter', Poppins;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* ========================================
+           RESPONSIVIDADE
+           ======================================== */
+        @media (max-width: 768px) {
+            .header-wrapper {
+                padding: 0 1rem;
+                z-index: 1000;
+                position: relative;
+            }
+
+        @media (max-width: 768px) {
+             .stats {
+                 padding: 1rem 2rem 2rem 2rem;
+    }
+
+             .header-wrapper {
+                 padding: 0 1rem;
+    }
+
+            .main-nav {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background: var(--bg-primary);
+                flex-direction: column;
+                gap: 1.5rem;
+                padding: 6rem 2rem 2rem 2rem;
+                border-bottom: none;
+
+               /* Animação de slide */
+               transform: translateX(-100%);
+               transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+               z-index: 998; 
+               overflow-y: auto;
+               align-items: flex-start;
+            }
+
+            /* Overlay escuro quando menu aberto */
+            body.menu-open::before {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(5px);
+                z-index: 997;
+                content: '';
+    }
+
+            .main-nav.active {
+                transform: translateX(0);
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+                z-index: 1001;
+            }
+
+            /* Botão hamburger animado (transforma em X) */
+            .mobile-menu-toggle {
+                position: relative;
+                width: 30px;
+                height: 24px;
+                background: none;
+                border: none;
+                cursor: pointer;
+                transition: all 0.3s ease;
+    }
+
+            .mobile-menu-toggle i {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                transition: all 0.3s ease;
+    }
+
+            .mobile-menu-toggle.active i::before {
+                content: '✕';
+                font-size: 1.5rem;
+    }
+
+
+            .mobile-menu-toggle.active i {
+                opacity: 0;
+    }
+            .hero
+                min-height: auto;
+                padding-bottom: 2rem;
+               
+     }
+
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                padding-top: 1rem;
+                height: auto;
+}
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .cta-buttons a {
+                width: 100%;
+                text-align: center;
+            }
+
+            .stat-item,
+            .feature-card,
+            .solution-card,
+            .testimonial-card,
+            .pricing-card {
+                animation-delay: 0s !important;
+            }
+
+            .features-grid,
+            .solutions-grid,
+            .pricing-grid,
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .modal-content {
+                padding: 2rem;
+            }
+
+            .cta-buttons-group {
+                flex-direction: column;
+            }
+
+            .cta-buttons-group a {
+                width: 100%;
+                text-align: center;
+            }
+
+            .footer-bottom {
+                flex-direction: column-reverse;
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-brand {
+                font-size: 1.3rem;
+            }
+
+            .hero-content h1 {
+                font-size: 1.8rem;
+                line-height: 1.2;
+            }
+
+            .hero-content p {
+                font-size: 0.95rem;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                padding: 0.9rem 1.8rem;
+                font-size: 0.85rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .feature-title,
+            .solution-title {
+                font-size: 1.2rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .pricing-amount {
+                font-size: 2rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+            }
+
+            .modal-title {
+                font-size: 1.5rem;
+            }
+
+            footer {
+                padding: 3rem 1rem 1rem;
+            }
+
+            .footer-content {
+                gap: 2rem;
+            }
+
+            .footer-social {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* ========================================
+           UTILITY CLASSES
+           ======================================== */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+    
+
+        /* ========================================
+   CONSULTING SECTION - CINEMATIC NOIR
+   ======================================== */
+.consulting-section {
+    padding: 8rem 2rem;
+    background: linear-gradient(180deg, rgba(10, 14, 39, 0.95) 0%, rgba(20, 24, 41, 0.95) 50%, rgba(30, 34, 65, 0.95) 100%);
+    border-top: 2px solid var(--border-color);
+    border-bottom: 2px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efeito de filme noir ao fundo */
+.consulting-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 30% 60%, rgba(0, 212, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 70% 40%, rgba(255, 0, 110, 0.02) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.consulting-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.consulting-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2.5rem;
+    margin-top: 4rem;
+}
+
+.consulting-card {
+    background: linear-gradient(135deg, rgba(20, 24, 41, 0.8) 0%, rgba(30, 34, 65, 0.8) 100%);
+    border: 2px solid rgba(0, 212, 255, 0.15);
+    border-radius: 16px;
+    padding: 3.5rem;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+    animation: fade-in 0.8s ease-out forwards;
+    opacity: 0;
+    backdrop-filter: blur(10px);
+}
+
+.consulting-card:nth-child(1) { animation-delay: 0.1s; }
+.consulting-card:nth-child(2) { animation-delay: 0.2s; }
+.consulting-card:nth-child(3) { animation-delay: 0.3s; }
+
+/* Efeito de borda cinemática */
+.consulting-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-cyan) 0%, transparent 50%, var(--accent-purple) 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.consulting-card:hover {
+    border-color: var(--accent-cyan);
+    background: linear-gradient(135deg, rgba(30, 34, 65, 0.95) 0%, rgba(40, 44, 75, 0.95) 100%);
+    transform: translateY(-12px);
+    box-shadow: 0 40px 80px rgba(0, 212, 255, 0.2);
+}
+
+.consulting-card:hover::before {
+    transform: scaleX(1);
+}
+
+.consulting-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(123, 44, 191, 0.2));
+    border: 2px solid rgba(0, 212, 255, 0.3);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--accent-cyan);
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.consulting-card:hover .consulting-icon {
+    transform: scale(1.15) rotate(-5deg);
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.35), rgba(123, 44, 191, 0.35));
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+}
+
+.consulting-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    color: var(--text-primary);
+    line-height: 1.3;
+}
+
+.consulting-description {
+    font-size: 1rem;
+    color: var(--text-tertiary);
+    margin-bottom: 2rem;
+    line-height: 1.8;
+    font-style: italic;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+    padding-bottom: 1.5rem;
+}
+
+.noir-highlight {
+    color: var(--accent-cyan);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.consulting-pillars {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.pillar-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.pillar-item i {
+    color: var(--accent-cyan);
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+    flex-shrink: 0;
+}
+
+.pillar-item span {
+    color: var(--text-tertiary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.consulting-impact {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.08) 0%, rgba(123, 44, 191, 0.08) 100%);
+    border-left: 3px solid var(--accent-cyan);
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.impact-icon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.consulting-impact p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.consulting-impact strong {
+    color: var(--accent-cyan);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .consulting-section {
+        padding: 5rem 2rem;
+    }
+
+    .consulting-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .consulting-card {
+        padding: 2.5rem;
+    }
+
+    .consulting-title {
+        font-size: 1.4rem;
+    }
+
+    .consulting-card {
+        animation-delay: 0s !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .consulting-section {
+        padding: 3rem 1rem;
+    }
+
+    .consulting-card {
+        padding: 2rem;
+    }
+
+    .consulting-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.6rem;
+    }
+
+    .consulting-title {
+        font-size: 1.2rem;
+    }
+
+    .pillar-item span {
+        font-size: 0.85rem;
+    }
+}
+
+/* ========================================
+   FIM DO CSS PARA CONSULTING SECTION
+   ======================================== */</style>
+</head>
+<body>        <!-- HEADER -->
+    <header id="header">
+        <div class="header-wrapper">
+            <a href="#" class="logo-brand">MFGV CORETECH</a>
+            <nav class="main-nav" id="mainNav">
+                <a href="#features">Soluções</a>
+                <a href="#pricing">Preços</a>
+                <a href="#testimonials">Casos de Sucesso</a>
+                <a href="#" onclick="openModal('contact-modal'); return false;" class="btn-header">Contato</a>
+            </nav>
+            <button class="mobile-menu-toggle" id="mobileToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO SECTION -->
+        <section class="hero">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <h1>Resolvemos a <span class="highlight">Alta taxa de Turnover</span> e Falta de Engajamento</h1>
+                    <p>Engenharia Organizacional baseada em Machine Learning. Preve saídas críticas, elimina fricção operacional e recuperar lucro invisível em menos de 6 meses.</p>
+                    <div class="cta-buttons">
+                        <button class="btn-primary" onclick="openModal('demo-modal')">
+                            <i class="fas fa-rocket"></i> Agendar uma Análise
+                        </button>
+                        <a href="https://wa.me/5519992123491?text=Tenho%20interesse%20em%20saber%20mais%20sobre%20MFGV%20CoreTech" class="btn-secondary" target="_blank">
+                            <i class="fas fa-message"></i> Fale Conosco
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-image" style="display: none;">
+                    <div class="hero-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=600&fit=crop" alt="Profissional de Dados">
+                    </div>
+                    <div class="floating-card card-1">
+                        <h4><i class="fas fa-check-circle" style="color: var(--accent-cyan); margin-right: 0.5rem;"></i>Engenheiro de Soluções</h4>
+                        <p>Especialista em Transformação Digital e Ciência de Dados</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATS SECTION -->
+        <section class="stats">
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-number">98,7%</div>
+                    <div class="stat-label">De Precisão Preditiva</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">300%+</div>
+                    <div class="stat-label">Em Média de ROI Comprovado</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">3m-4m</div>
+                    <div class="stat-label">Meses para o seu Payback</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">25+</div>
+                    <div class="stat-label">Empresas Transformadas</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURES SECTION -->
+        <section class="features-section" id="features">
+            <div class="features-grid" style="max-width: 1600px; margin: 0 auto; padding: 0 2rem;">
+                <div class="section-header" style="grid-column: 1/-1; margin-bottom: 3rem;">
+                    <div class="section-label">
+                        <i class="fas fa-sparkles" style="margin-right: 0.5rem;"></i>
+                        TECNOLOGIA
+                    </div>
+                    <h2 class="section-title">Três Pilares de Transformação</h2>
+                    <p class="section-subtitle">Os sistemas Core da MFGV usam uma poderosa base de inteligência, otimização de processos e análises estratégicas em um corpo de ferramentas altamente tecnológicas, tudo em tempo real.</p>
+                </div>
+
+                <div class="feature-card scroll-reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="feature-title">CoreHuman Intelligence™</h3>
+                    <p class="feature-description">Machine Learning com 98,7% de acurácia. Identifica com antecedência a possibilidade de turnover, burnout e segurança psicológica em tempo real.</p>
+                </div>
+
+                <div class="feature-card scroll-reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3 class="feature-title">CoreFlow Nexus™</h3>
+                    <p class="feature-description">Orquestração de processos elimina caos. Aumenta OEE (Eficácia Geral das Operações) 15-25%, reduz downtime, cria SLAs (Acordo de Nível de Serviço) auditáveis entre departamentos.</p>
+                </div>
+
+                <div class="feature-card scroll-reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-chess-board"></i>
+                    </div>
+                    <h3 class="feature-title">Strategy Hub™</h3>
+                    <p class="feature-description">Controle em tempo real das ferramentas CoreHuman e CoreFlow. Cruza dados soft e hard para converter cultura em R$ mensuráveis. Garante um monitoramento 24/7 prevendo e apresentando soluções tecnológicas e humanizadas na sua empresa.</p>
+                </div>
+
+                <div class="feature-card scroll-reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">Análise Preditiva</h3>
+                    <p class="feature-description">Algoritmos avançados preveem comportamentos e padrões organizacionais com precisão de 98,7%. Antecipamos os problemas antes que afetem resultados.</p>
+                </div>
+
+                <div class="feature-card scroll-reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3 class="feature-title">Segurança & Compliance</h3>
+                    <p class="feature-description">LGPD Compliance. Criptografia de ponta a ponta. Auditoria total de dados. Seus dados nunca são comprometidos.</p>
+                </div>
+
+                <div class="feature-card scroll-reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-zap"></i>
+                    </div>
+                    <h3 class="feature-title">Automação Inteligente</h3>
+                    <p class="feature-description">Workflows automáticos reduzem fricção em 40%. Eliminam manualidades. Liberam sua equipe para decisões estratégicas. Incrível aumento de Produtividade</p>
+                </div>
+            </div>
+        </section>
+
+<section class="consulting-section" id="consulting">
+    <div class="consulting-container">
+        <div class="section-header" style="text-align: center; margin-bottom: 4rem;">
+            <div class="section-label">
+                <i class="fas fa-people-carry" style="margin-right: 0.5rem;"></i>
+                CONSULTORIA
+            </div>
+            <h2 class="section-title">Além do Software:<br>Nossa Engenharia em Campo</h2>
+            <p class="section-subtitle">
+                Transformação real só acontece com gente real. Nossos consultores de elite operam dentro da sua empresa, garantindo que cada solução tecnológica converta em resultados mensuráveis e sustentáveis.
+            </p>
+        </div>
+
+        <div class="consulting-grid">
+            <!-- CARD 1: MENTORIA DE LIDERANÇA -->
+            <div class="consulting-card scroll-reveal">
+                <div class="consulting-icon">
+                    <i class="fas fa-chess-king"></i>
+                </div>
+                
+                <h3 class="consulting-title">Mentoria de Liderança & Gestão</h3>
+                
+                <p class="consulting-description">
+                    Fim das reuniões inúteis. Início do <span class="noir-highlight">Deep Work</span>.
+                </p>
+                
+                <div class="consulting-pillars">
+                    <div class="pillar-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Treinamento de líderes em Escuta Ativa e Feedback Transformacional</span>
+                    </div>
+                    <div class="pillar-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Protocol Deep Work: Blocos focados, reuniões apenas com decisão clara</span>
+                    </div>
+                    <div class="pillar-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Coaching 1:1 para conversas difíceis, corte de desempenho e mudança</span>
+                    </div>
+                    <div class="pillar-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Modelagem de valores: lideranças distribuídas para Agro e Indústria</span>
+                    </div>
+                    <div class="pillar-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Gesto de mudança e resistência em ambientes de pressão (OEE, SLA)</span>
+                    </div>
+                </div>
+                
+                <div class="consulting-impact">
+                    <span class="impact-icon">📊</span>
+                    <p><strong>Impacto:</strong> Redução de 40% em reuniões improdutivas. Aumento de 25% em engajamento. Lideranças mais decisivas.</p>
+                </div>
+            </div>
+
+            <!-- CARD 2: CULTURA & COMUNICAÇÃO -->
+            <div class="consulting-card scroll-reveal">
+                <div class="consulting-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                
+                <h3 class="consulting-title">Cultura & Comunicação</h3>
+                
+                <p class="consulting-description">
+                    Elimine a <span class="noir-highlight">Rádio Peão</span>. Mais transparência e barreiras eliminadas.
+                </p>
+                
+                <div class="consulting-pillars">
+                    <div class="pillar-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Substituição de Rádio Peão por CoreFlow: Tickets rastreáveis, confirmação de recebimento</span>
+                    </div>
+                    <div class="pillar-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Protocolo de Segurança Psicológica: Canais anônimos, cultura do erro como aprendizado</span>
+                    </div>
+                    <div class="pillar-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Eliminação de silos (barreiras): Integração completa entre departamentos (RH, Produção, Logística)</span>
+                    </div>
+                    <div class="pillar-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Onboarding acelerado: De 4-6 meses para 6-8 semanas com mentoring estruturado</span>
+                    </div>
+                    <div class="pillar-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Recognition at Scale: Sistema estruturado vinculado a OEE, SLA e valores</span>
+                    </div>
+                </div>
+                
+                <div class="consulting-impact">
+                    <span class="impact-icon">🎯</span>
+                    <p><strong>Impacto:</strong> 100% rastreabilidade de comunicações. Redução de 60% em boatos. Pertencimento aumenta 45%.</p>
+                </div>
+            </div>
+
+            <!-- CARD 3: MONITORAMENTO IN-LOCO -->
+            <div class="consulting-card scroll-reveal">
+                <div class="consulting-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                
+                <h3 class="consulting-title">Monitoramento In-Loco</h3>
+                
+                <p class="consulting-description">
+                    Tecnologia sem adoção = desperdício. Nossos especialistas garantem uso real.
+                </p>
+                
+                <div class="consulting-pillars">
+                    <div class="pillar-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Engenheiros da MFGV operando dentro da sua empresa (12-18 meses)</span>
+                    </div>
+                    <div class="pillar-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Auditoria de Stack: Mapear silos, eliminar re-entradas de dados, integrar sistemas</span>
+                    </div>
+                    <div class="pillar-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Treinamento contínuo: Supervisores, operários, lideranças usam CoreSight diariamente</span>
+                    </div>
+                    <div class="pillar-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Dashboard de Adoção: Taxa de uso por módulo, ROI em tempo real, correções imediatas</span>
+                    </div>
+                    <div class="pillar-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Sucesso do Cliente Garantido: SLA de 94.9% uptime + consultoria dedicada</span>
+                    </div>
+                </div>
+                
+                <div class="consulting-impact">
+                    <span class="impact-icon">✅</span>
+                    <p><strong>Impacto:</strong> 95%+ de adoção real. ROI validado mês a mês. Zero abandono de plataforma.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+                <!-- SOLUTIONS SECTION -->
+        <section class="solutions-section" id="solutions">
+            <div class="solutions-container">
+                <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+                    <div class="section-label">
+                        <i class="fas fa-layer-group" style="margin-right: 0.5rem;"></i>
+                        JORNADA
+                    </div>
+                    <h2 class="section-title">Como Funciona a Transformação</h2>
+                </div>
+
+                <div class="solutions-grid">
+                    <div class="solution-card scroll-reveal">
+                        <div class="solution-number">01</div>
+                        <h3 class="solution-title">Diagnóstico CoreSight</h3>
+                        <p class="solution-description">Mapeamento completo de sua organização. Geramos relatório detalhando exatamente quanto você está perdendo por turnover, absenteísmo e fricção(ineficiências, atrasos ou obstáculos).</p>
+                        <ul class="solution-list">
+                            <li>Avaliação via CoreSight (Minutos)</li>
+                            <li>Avaliação Interna Sistemática (Semanas)</li>
+                            <li>Relatório financeiro</li>
+                            <li>Roadmap customizado</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution-card scroll-reveal">
+                        <div class="solution-number">02</div>
+                        <h3 class="solution-title">Implementação CoreSight</h3>
+                        <p class="solution-description">Deploy completo das plataformas. CoreHuman, CoreFlow, Strategy Hub. Go-live com grupo piloto em 3-4 semanas.</p>
+                        <ul class="solution-list">
+                            <li>Setup não-invasivo</li>
+                            <li>Treinamento completo</li>
+                            <li>Dashboards personalizados</li>
+                            <li>Testes de Segurança</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution-card scroll-reveal">
+                        <div class="solution-number">03</div>
+                        <h3 class="solution-title">Engenharia & Consolidação</h3>
+                        <p class="solution-description">Baseado em insights do nosso Strategy Hub, podemos acompanhar e redesenhar processos em tempo real, sim monitoramento de engajamento e rendimento de cada setor da sua empresa em tempo real 24/7. A era da tecnologia em prol da humanização e alta performance dos seus colaboradores.</p>
+                        <ul class="solution-list">
+                            <li>Consultoria estratégica</li>
+                            <li>Métricas de sucesso claras</li>
+                            <li>ROI rastreado em tempo real</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRICING SECTION -->
+        <section class="pricing-section" id="pricing">
+            <div class="pricing-container">
+                <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+                    <div class="section-label">
+                        <i class="fas fa-tag" style="margin-right: 0.5rem;"></i>
+                        INVESTIMENTO
+                    </div>
+                    <h2 class="section-title">Planos Transparentes</h2>
+                    <p class="section-subtitle">Escolha o plano que melhor se adequa ao seu estágio de transformação. Todos incluem suporte 24/7 e consultoria estratégica.</p>
+                </div>
+
+                <div class="pricing-grid">
+                    <div class="pricing-card scroll-reveal">
+                        <div class="pricing-badge">Para Iniciar</div>
+                        <h3 class="pricing-name">CoreSight Starter</h3>
+                        <p class="pricing-description">Ideal para empresas começando sua jornada de transformação.</p>
+                        <div class="pricing-value">
+                            <span class="pricing-currency"> </span>
+                            <span class="pricing-amount">Sob Análise</span>
+                            <span class="pricing-period"> </span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li>CoreHuman Intelligence (Básico)</li>
+                            <li>Dashboard estratégico (Básico)</li>
+                            <li>Relatórios mensais</li>
+                            <li>Suporte por email</li>
+                        </ul>
+                        <button class="pricing-cta" onclick="openModal('contact-modal')">AGENDAR UMA REUNIÃO</button>
+                    </div>
+
+                    <div class="pricing-card featured scroll-reveal">
+                        <div class="pricing-badge">Mais Popular</div>
+                        <h3 class="pricing-name">CoreSight Pro</h3>
+                        <p class="pricing-description">Solução completa com todos os módulos e consultoria.</p>
+                        <div class="pricing-value">
+                            <span class="pricing-currency"> </span>
+                            <span class="pricing-amount">Sob Análise</span>
+                            <span class="pricing-period"> </span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li>CoreHuman + CoreFlow + Strategy Hub</li>
+                            <li>Análise ONA completa</li>
+                            <li>Consultoria mensal (16h/mês)</li>
+                            <li>Suporte prioritário 24/7 </li>
+                            <li>Customizações específicas</li>
+                        </ul>
+                        <button class="pricing-cta" onclick="openModal('contact-modal')">AGENDAR UMA REUNIÃO</button>
+                    </div>
+
+                    <div class="pricing-card scroll-reveal">
+                        <div class="pricing-badge">GRANDES EMPRESAS</div>
+                        <h3 class="pricing-name">CoreSight Enterprise</h3>
+                        <p class="pricing-description">Solução white-label com implementação dedicada.</p>
+                        <div class="pricing-value">
+                            <span class="pricing-currency"> </span>
+                            <span class="pricing-amount">Sob Análise</span>
+                            <span class="pricing-period"> </span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li>Solução totalmente customizada</li>
+                            <li>Equipe dedicada de engenheiros</li>
+                            <li>Integrações com sistemas legados</li>
+                            <li>SLA de 99.9% uptime</li>
+                            <li>Suporte premium dedicated</li>
+                        </ul>
+                        <button class="pricing-cta" onclick="openModal('contact-modal')">AGENDAR UMA REUNIÃO</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TESTIMONIALS SECTION -->
+        <section class="testimonials-section" id="testimonials">
+            <div class="testimonials-container">
+                <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+                    <div class="section-label">
+                        <i class="fas fa-quote-left" style="margin-right: 0.5rem;"></i>
+                        SUCESSO
+                    </div>
+                    <h2 class="section-title">Transformações Reais</h2>
+                    <p class="section-subtitle">Veja como empresas transformaram suas operações e recuperaram milhões em lucro invisível.</p>
+                </div>
+
+                <div class="testimonials-grid">
+                    <div class="testimonial-card scroll-reveal">
+                        <div class="testimonial-stars">★★★★★</div>
+                        <p class="testimonial-text">"Em 6 meses, recuperamos R$ 1.8M em turnover evitado. O Strategy Hub virou a fonte de verdade do nosso board."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">CEO</div>
+                            <div class="author-info">
+                                <h4>Carlos Mendes</h4>
+                                <p>CEO, Manufatura 500+</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-card scroll-reveal">
+                        <div class="testimonial-stars">★★★★★</div>
+                        <p class="testimonial-text">"A predição de saída foi 89% acertada. Conseguimos reter nossos melhores talentos antes que recebessem propostas."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">DIR</div>
+                            <div class="author-info">
+                                <h4>Amanda Silva</h4>
+                                <p>Diretora de RH, Tech</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-card scroll-reveal">
+                        <div class="testimonial-stars">★★★★★</div>
+                        <p class="testimonial-text">"OEE subiu 22%. CoreFlow eliminou completamente o caos de WhatsApp. Produção mais eficiente, equipe mais feliz."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">OPE</div>
+                            <div class="author-info">
+                                <h4>Roberto Costa</h4>
+                                <p>Gerente Operacional, Agro</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA SECTION -->
+        <section class="cta-section">
+            <div class="cta-container">
+                <div class="cta-content scroll-reveal">
+                    <h2>Pronto para Transformar?</h2>
+                    <p>Descubra quanto você está realmente perdendo. Agende uma demo gratuita e veja o impacto potencial em números reais.</p>
+                    <div class="cta-buttons-group">
+                        <button class="btn-primary" onclick="openModal('demo-modal')" style="margin: 0;">
+                            <i class="fas fa-calendar-check"></i> Solicitar Análise
+                        </button>
+                        <a href="https://wa.me/5519992123491?text=Qual%20é%20a%20disponibilidade%20para%20uma%20demo%20de%20CoreSight%3F" class="btn-secondary" target="_blank" style="margin: 0;">
+                            <i class="fas fa-phone"></i> Ligar Agora
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>MFGV CoreTech</h3>
+                    <p>Engenharia Organizacional baseada em Ciência de Dados. Transformamos cultura em ROI mensurado.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Produto</h3>
+                    <a href="#features">CoreHuman Intelligence</a>
+                    <a href="#features">CoreFlow Nexus</a>
+                    <a href="#features">Strategy Hub</a>
+                </div>
+                <div class="footer-column">
+                    <h3>Empresa</h3>
+                    <a href="#" onclick="openModal('about-modal'); return false;">Sobre</a>
+                    <a href="#">Blog</a>
+                    <a href="#">Documentação</a>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <a href="#">Privacidade</a>
+                    <a href="#">Termos de Uso</a>
+                    <a href="#">LGPD</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="footer-copyright">© 2025 MFGV CoreTech. Todos os direitos reservados.</p>
+                <div class="footer-social">
+                    <a href="https://linkedin.com/company/mfgv" target="_blank" title="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://wa.me/5519992123491" target="_blank" title="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <a href="mailto:contact@mfgv.com.br" title="Email">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODALS -->
+    <div class="modal" id="demo-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('demo-modal')">&times;</button>
+            <h2 class="modal-title">Agende Sua Demo Gratuita</h2>
+            <p class="modal-description">Veja na prática como MFGV CoreTech pode transformar sua organização. Duração: 30 minutos com nosso engenheiro de soluções.</p>
+            <form class="modal-form">
+                <div class="form-group">
+                    <label for="name">Nome Completo</label>
+                    <input type="text" id="name" placeholder="Seu nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="company">Empresa</label>
+                    <input type="text" id="company" placeholder="Nome da empresa" required>
+                </div>
+                <div class="form-group">
+                    <label for="role">Cargo</label>
+                    <input type="text" id="role" placeholder="Seu cargo" required>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;">
+                    Confirmar Demo
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="contact-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('contact-modal')">&times;</button>
+            <h2 class="modal-title">Fale com Nosso Time</h2>
+            <p class="modal-description">Tire suas dúvidas e explore as melhores soluções para sua organização.</p>
+            <form class="modal-form">
+                <div class="form-group">
+                    <label for="contact-name">Nome</label>
+                    <input type="text" id="contact-name" placeholder="Seu nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="contact-email">Email</label>
+                    <input type="email" id="contact-email" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="contact-message">Mensagem</label>
+                    <textarea id="contact-message" placeholder="Conte-nos como podemos ajudar..." required></textarea>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;">
+                    Enviar Mensagem
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="about-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('about-modal')">&times;</button>
+            <h2 class="modal-title">Sobre MFGV CoreTech</h2>
+            <p class="modal-description" style="margin-bottom: 1.5rem;">Fundados em 2020, MFGV CoreTech é especializada em Engenharia Organizacional baseada em Ciência de Dados. Nossa missão é transformar cultura em ROI mensurado.</p>
+            <p class="modal-description" style="margin-bottom: 1.5rem;">Com mais de 50 empresas transformadas e R$ 150M+ em lucro recuperado para nossos clientes, somos líderes em soluções de inteligência de capital humano.</p>
+            <p class="modal-description">Nosso time é composto por engenheiros organizacionais, data scientists e consultores C-Level com décadas de experiência em transformação digital.</p>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // HEADER SCROLL EFFECT
+        // ========================================
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // ========================================
+        // MOBILE MENU TOGGLE
+        // ========================================
+       const mobileToggle = document.getElementById('mobileToggle');
+       const mainNav = document.getElementById('mainNav');
+
+        mobileToggle.addEventListener('click', () => {
+            mainNav.classList.toggle('active');
+            mobileToggle.classList.toggle('active');
+            document.body.classList.toggle('menu-open');
+       });
+
+        // Fechar menu ao clicar fora (no overlay)
+        document.addEventListener('click', (e) => {
+            if (mainNav.classList.contains('active') && 
+                !mainNav.contains(e.target) && 
+                !mobileToggle.contains(e.target)) {
+                mainNav.classList.remove('active');
+                mobileToggle.classList.remove('active');
+                document.body.classList.remove('menu-open');
+    }
+});
+
+        // ========================================
+        // MODAL FUNCTIONS
+        // ========================================
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+
+        // ========================================
+        // INTERSECTION OBSERVER - SCROLL REVEAL
+        // ========================================
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-reveal').forEach(el => {
+            scrollObserver.observe(el);
+        });
+
+        // ========================================
+        // SMOOTH SCROLL ANCHOR LINKS
+        // ========================================
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#' && document.querySelector(href)) {
+                    e.preventDefault();
+                    document.querySelector(href).scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // ========================================
+        // FORM SUBMISSION
+        // ========================================
+        document.querySelectorAll('.modal-form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                
+                // Redirect to WhatsApp with form data
+                const name = form.querySelector('input[type="text"]').value;
+                const email = form.querySelector('input[type="email"]').value;
+                const message = `Olá! Meu nome é ${name}. Email: ${email}. Gostaria de mais informações sobre MFGV CoreTech.`;
+                
+                window.open(`https://wa.me/5519992123491?text=${encodeURIComponent(message)}`, '_blank');
+                
+                form.reset();
+                closeModal(form.closest('.modal').id);
+            });
+        });
+
+        // ========================================
+        // PAGE LOAD ANIMATIONS
+        // ========================================
+        window.addEventListener('load', () => {
+            document.body.style.animation = 'fade-in 0.8s ease';
+        });
+
+        console.log('MFGV CoreTech Landing Page - Premium OmiSpace Edition Ready');
+    </script>
+</body>
+</html>
