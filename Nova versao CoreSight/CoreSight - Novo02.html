@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MFGV CoreSight | Diagnóstico Estratégico v6.1 Integrated</title>
+    <title>MFGV CoreSight | Diagnóstico Estratégico v6.2 (Fixed)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -448,7 +448,7 @@
                     </div>
                     
                     <div class="mt-8 text-center text-[10px] text-slate-400">
-                        <p>MFGV CoreSight v6.1 • Algoritmo Auditável • Baseado em Benchmark Brasil 2025</p>
+                        <p>MFGV CoreSight v6.2 • Algoritmo Auditável • Baseado em Benchmark Brasil 2025</p>
                     </div>
 
                 </div>
@@ -675,7 +675,7 @@
             document.getElementById('inp-salary').value = state.data.sal.toFixed(2);
 
             state.data.ben = parseFloat(document.getElementById('inp-benefits').value) || 0;
-            state.data.tax = parseFloat(document.getElementById('inp-tax').value);
+            state.data.tax = parseFloat(document.getElementById('inp-tax').value) || 1.35;
             state.data.multi = document.getElementById('inp-multisite').checked;
             
             const revStr = document.getElementById('inp-revenue').value.replace(/\./g, '').replace(',', '.');
@@ -692,7 +692,7 @@
             state.res.monthlyLoad = monthlyLoad;
         }
 
-        // === CORE CALCULATION ENGINE ===
+        // === CORE CALCULATION ENGINE (FIXED) ===
         function runDiagnostics() {
             const D = state.data;
             const R = state.res;
@@ -704,69 +704,60 @@
             const getV = (arr, idx, defIdx) => QF[idx].vals[arr[idx] !== undefined ? arr[idx] : defIdx];
             const getOV = (idx, defIdx) => QO[idx].vals[AO[idx] !== undefined ? AO[idx] : defIdx];
 
-            // --- CALCULATIONS FROM QUESTIONNAIRE ---
-            const turnoverRate = getV(AF, 0, 2); 
-            const successionFactor = getV(AF, 1, 2);
-            // We reduce the weight of generic turnover if we have specific risk data later, but kept for base
-            let costTurnover = (D.emp * turnoverRate) * (R.monthlyLoad * 1.5) * successionFactor; 
+            // 1. RISK CALCULATION (From Department Inputs)
+            let totalSurgeryCost = 0;
+            let totalBleedingCost = 0;
+            
+            state.departments.forEach(dept => {
+                // Ensure values are numbers
+                const salary = dept.salary || 0;
+                const tax = state.data.tax || 1.35;
+                const ben = state.data.ben || 0;
+                
+                // Monthly Cost per Person (Salary * Tax + Benefits)
+                const deptMonthlyLoad = (salary * tax) + ben;
+                // Annual Cost per Person (approx 13.33 salaries)
+                const deptAnnualCost = deptMonthlyLoad * 13.33;
+                
+                const toxicCount = dept.risk.toxic || 0;
+                const contCount = dept.risk.contaminated || 0;
 
+                // Surgery Cost Logic: Toxic * (AnnualCost * 2.5)
+                // Represents: Severance, Recruitment, Ramp-up, Loss of Knowledge
+                const costPerToxic = deptAnnualCost * 2.5; 
+                totalSurgeryCost += toxicCount * costPerToxic;
+
+                // Bleeding Cost Logic: (Toxic + 0.5*Contaminated) * (AnnualCost * 0.30)
+                // Represents: 30% Inefficiency/Productivity Loss
+                const bleedingUnits = toxicCount + (contCount * 0.5);
+                const costPerBleed = deptAnnualCost * 0.30; 
+                totalBleedingCost += bleedingUnits * costPerBleed;
+            });
+
+            // 2. QUESTIONNAIRE METRICS
+            // Absenteísmo
             const baseAbs = state.ctx === 'AGRO' ? 0.08 : (state.ctx === 'INDUSTRIAL' ? 0.05 : 0.03);
             const absControlMult = getV(AF, 3, 2);
             const costAbs = R.annualPayroll * baseAbs * (absControlMult - 0.5);
 
+            // Silêncio / Medo
             const silenceRate = getV(AF, 6, 2);
             const costSilence = R.annualPayroll * silenceRate;
 
-            const wasteRate = getV(AF, 5, 2);
-            const costBlind = (R.annualPayroll * 0.03) * wasteRate;
-
-            const recogRate = getOV(1, 2);
-            const leadFactor = getOV(0, 2);
-            const costDemotivation = R.annualPayroll * recogRate * leadFactor;
-
-            const healthRate = getOV(2, 2);
-            const costHealth = R.annualPayroll * healthRate;
-
-            const newHires = D.emp * turnoverRate;
-            const onboardMonths = getOV(3, 2);
-            const costOnboard = newHires * (R.monthlyLoad) * (onboardMonths) * 0.5;
-
+            // Operational Inefficiency (Meetings/Bureaucracy)
             const meetPct = (AO[4] || 25) / 100;
             const costMeet = R.annualPayroll * 0.30 * meetPct;
 
             const burHours = AO[5] || 4;
             const costBur = (burHours / 40) * R.annualPayroll;
 
-            // --- CALCULATIONS FROM RISK STEP (BACKEND INTEGRATION) ---
-            let totalSurgeryCost = 0;
-            let totalBleedingCost = 0;
+            // Note: We deliberately exclude generic "Turnover" and "Demotivation" formulas 
+            // if we have specific risk data (Surgery/Bleeding) to avoid double counting.
+            // If no risk data is entered, we could fallback, but let's prioritize the Risk Tab as requested.
             
-            state.departments.forEach(dept => {
-                // Determine Cost Per Person for this Dept
-                // Logic: (Avg Salary * Tax) + Benefits
-                const deptMonthlyLoad = (dept.salary * state.data.tax) + state.data.ben;
-                
-                // Surgery Cost (Toxic)
-                // Logic: Cost to replace = 2.5x Annual Salary (Severance + Hire + Ramp-up)
-                // Using 2.5x monthly load * 13.33 approx
-                const toxicCount = dept.risk.toxic || 0;
-                const costPerToxic = deptMonthlyLoad * 12 * 1.5; // Conservative multiplier for replacement
-                totalSurgeryCost += toxicCount * costPerToxic;
-
-                // Bleeding Cost (Contaminated)
-                // Logic: 30% inefficiency per year
-                const contCount = dept.risk.contaminated || 0;
-                const costPerCont = deptMonthlyLoad * 12 * 0.30; 
-                totalBleedingCost += contCount * costPerCont;
-            });
-
-            // Adjust generic costs if specific risk data is present to avoid double counting
-            if(totalSurgeryCost > 0) costTurnover = costTurnover * 0.5; // Reduce generic turnover est
-            if(totalBleedingCost > 0) costDemotivation = costDemotivation * 0.2; // Reduce generic demotivation est
-
-            // TOTALS
-            const totalTCWL = costTurnover + costAbs + costSilence + costBlind + costDemotivation + costHealth + costOnboard + costMeet + costBur + totalSurgeryCost + totalBleedingCost;
-            const recovery = totalTCWL * 0.30;
+            // TOTAL TCWL
+            const totalTCWL = totalSurgeryCost + totalBleedingCost + costAbs + costSilence + costMeet + costBur;
+            const recovery = totalTCWL * 0.35; // Conservative recovery estimate
 
             // PLAN LOGIC
             let planKey = 'STARTER';
@@ -778,12 +769,12 @@
             const plan = CONFIG.PLANS[planKey];
             const avgInv = (plan.minPrice + plan.maxPrice) / 2 * 12 * 1000;
             const roi = ((recovery - avgInv) / avgInv) * 100;
-            const payback = (avgInv / (recovery/12));
+            const payback = avgInv > 0 ? (avgInv / (recovery/12)) : 0;
 
-            const hcroi = D.rev > 0 ? (D.rev / R.annualPayroll).toFixed(2) : "0.0";
+            const hcroi = (D.rev > 0 && R.annualPayroll > 0) ? (D.rev / R.annualPayroll).toFixed(2) : "0.0";
 
-            const lossPct = totalTCWL / R.annualPayroll;
-            const score = Math.max(0, Math.round(100 - (lossPct * 100 * 2)));
+            const lossPct = R.annualPayroll > 0 ? (totalTCWL / R.annualPayroll) : 0;
+            const score = Math.max(0, Math.round(100 - (lossPct * 100 * 2.5))); // Adjusted weighting
             const status = score > 80 ? 'Saudável' : (score > 50 ? 'Alerta' : 'Crítico');
 
             // --- RENDER RESULTS ---
@@ -803,10 +794,13 @@
             document.getElementById('res-surgery-cost').innerText = formatMoney(totalSurgeryCost);
             document.getElementById('res-bleeding-cost').innerText = formatMoney(totalBleedingCost);
             
-            const percentDiff = totalBleedingCost > 0 ? ((totalBleedingCost - totalSurgeryCost) / totalBleedingCost * 100) : 0;
-            const insightText = totalBleedingCost > totalSurgeryCost 
-                ? `💡 INSIGHT: Manter o problema custa ${Math.abs(percentDiff).toFixed(0)}% a mais do que a solução definitiva (Cirurgia).`
-                : `💡 INSIGHT: A solução radical é mais custosa agora. Foque em recuperação (Sangria).`;
+            let insightText = "Sem dados suficientes.";
+            if (totalBleedingCost > 0 || totalSurgeryCost > 0) {
+                const percentDiff = totalBleedingCost > 0 ? ((totalBleedingCost - totalSurgeryCost) / totalBleedingCost * 100) : 0;
+                insightText = totalBleedingCost > totalSurgeryCost 
+                    ? `💡 INSIGHT: Manter o problema custa ${Math.abs(percentDiff).toFixed(0)}% a mais do que a solução definitiva (Cirurgia).`
+                    : `💡 INSIGHT: A solução radical é mais custosa agora. Foque em recuperação (Sangria).`;
+            }
             document.getElementById('res-insight-text').innerText = insightText;
 
             // Plan UI
@@ -816,20 +810,19 @@
             document.getElementById('plan-tech').innerHTML = plan.tech.map(t => `<li><i class="fa-solid fa-check text-[#00bcd4] mr-2"></i>${t}</li>`).join('');
             document.getElementById('plan-core').innerHTML = plan.core.map(c => `<li><i class="fa-solid fa-check text-[#00bcd4] mr-2"></i>${c}</li>`).join('');
 
-            // Table
+            // Table Data
             const rows = [
-                { l: 'Risco Cultural (Tóxicos/Contaminados)', v: totalSurgeryCost + totalBleedingCost },
-                { l: 'Turnover & Onboarding (Natural)', v: costTurnover + costOnboard },
-                { l: 'Absenteísmo & Saúde', v: costAbs + costHealth },
-                { l: 'Ineficiência (Reuniões/Burocracia)', v: costMeet + costBur },
-                { l: 'Silêncio & Desmotivação', v: costSilence + costDemotivation }
+                { l: 'Custo da Cirurgia (Turnover Tóxico)', v: totalSurgeryCost },
+                { l: 'Custo da Sangria (Ineficiência)', v: totalBleedingCost },
+                { l: 'Absenteísmo & Silêncio', v: costAbs + costSilence },
+                { l: 'Ineficiência Operacional (Reuniões/Bur.)', v: costMeet + costBur }
             ].sort((a,b) => b.v - a.v);
 
             document.getElementById('table-body').innerHTML = rows.map(r => `
                 <tr class="bg-white border-b border-slate-50">
                     <td class="px-4 py-3 font-medium text-slate-900">${r.l}</td>
                     <td class="px-4 py-3 text-right text-slate-600">${formatMoney(r.v)}</td>
-                    <td class="px-4 py-3 text-right text-slate-400 text-xs">${((r.v/R.annualPayroll)*100).toFixed(1)}%</td>
+                    <td class="px-4 py-3 text-right text-slate-400 text-xs">${R.annualPayroll > 0 ? ((r.v/R.annualPayroll)*100).toFixed(1) : 0}%</td>
                 </tr>
             `).join('');
 
@@ -842,7 +835,7 @@
                     labels: rows.map(r => r.l),
                     datasets: [{
                         data: rows.map(r => r.v),
-                        backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#64748b'],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#3b82f6'],
                         borderWidth: 0
                     }]
                 },
@@ -866,7 +859,7 @@
 
             state.step = step;
 
-            // Trigger Risk Render if entering Step 4 (Index 4 is Step 5 UI)
+            // Trigger Risk Render if entering Step 4
             if(step === 4) {
                 renderRiskStep();
             }
@@ -905,6 +898,7 @@
         }
 
         function formatMoney(val) {
+            if(!val) return "R$ 0";
             if(val >= 1000000) return "R$ " + (val/1000000).toFixed(1) + "M";
             if(val >= 1000) return "R$ " + (val/1000).toFixed(0) + "k";
             return "R$ " + val.toFixed(0);
