@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MFGV CoreSight | Diagnóstico Estratégico v6.2 (Fixed)</title>
+    <title>MFGV CoreSight | Diagnóstico Estratégico v6.3 (Print Fix)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -66,19 +66,80 @@
             box-shadow: 0 4px 12px rgba(3, 44, 124, 0.2); 
         }
 
-        /* PRINT STYLES (RELATÓRIO EXECUTIVO) */
+        /* =========================================
+           CORREÇÃO DE IMPRESSÃO (PRINT FIX)
+           ========================================= */
         @media print {
-            body { background: white; color: black; display: block; }
-            .no-print { display: none !important; }
-            .glass-panel { box-shadow: none; border: none; width: 100%; max-width: 100%; height: auto; border-radius: 0; }
+            /* Reset Global */
+            @page { margin: 1cm; size: A4; }
+            body { 
+                background: white !important; 
+                display: block !important; 
+                height: auto !important; 
+                overflow: visible !important;
+                padding: 0 !important;
+            }
+
+            /* Esconder elementos de UI */
+            .sidebar-menu,      /* Menu Lateral */
+            #nav-footer,        /* Botões de navegação */
+            .md\:hidden,        /* Header Mobile */
+            .no-print,          /* Classe genérica */
+            #mobile-progress,   /* Barra de progresso */
+            .step-content       /* Esconde todos os steps por padrão */
+            { 
+                display: none !important; 
+            }
+
+            /* Reset do Container Principal */
+            .glass-panel {
+                position: static !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
+                border: none !important;
+                box-shadow: none !important;
+                background: white !important;
+                display: block !important; /* Desabilita o flexbox */
+                border-radius: 0 !important;
+                margin: 0 !important;
+            }
+
+            /* Reset da Área de Scroll */
+            #main-scroll {
+                position: static !important;
+                overflow: visible !important;
+                height: auto !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            /* Mostrar EXCLUSIVAMENTE o Relatório (Step 6) */
+            #step-6 { 
+                display: block !important; 
+                width: 100% !important;
+                height: auto !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            /* Forçar impressão de cores de fundo (Tailwind classes) */
+            .bg-red-50, .bg-emerald-50, .bg-white, .bg-mfgv-deep, .bg-slate-50 {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            /* Ajustes de Grid para papel A4 */
+            .grid { 
+                display: grid !important; 
+                grid-gap: 1rem !important;
+            }
+            
+            /* Evitar quebras de página ruins */
             .print-break { page-break-before: always; }
-            #main-scroll { overflow: visible; padding: 0; }
-            .print-header { display: flex !important; margin-bottom: 20px; border-bottom: 2px solid #032c7c; padding-bottom: 10px; }
-            /* Force colors */
-            .text-mfgv-deep { color: #032c7c !important; }
-            .bg-mfgv-deep { background-color: #032c7c !important; color: white !important; -webkit-print-color-adjust: exact; }
-            .bg-red-50 { background-color: #fef2f2 !important; -webkit-print-color-adjust: exact; }
-            .bg-emerald-50 { background-color: #ecfdf5 !important; -webkit-print-color-adjust: exact; }
+            canvas { max-width: 100% !important; page-break-inside: avoid; }
+            tr { page-break-inside: avoid; }
         }
     </style>
 </head>
@@ -86,7 +147,7 @@
 
     <div class="w-full max-w-[1600px] h-screen md:h-[95vh] flex md:rounded-3xl overflow-hidden relative bg-white glass-panel shadow-2xl">
         
-        <div class="w-[280px] lg:w-[320px] bg-[#032c7c] text-white flex-shrink-0 flex flex-col justify-between p-6 lg:p-8 relative z-20 hidden md:flex">
+        <div class="sidebar-menu w-[280px] lg:w-[320px] bg-[#032c7c] text-white flex-shrink-0 flex flex-col justify-between p-6 lg:p-8 relative z-20 hidden md:flex">
             <div>
                 <div class="flex items-center gap-3 mb-10">
                     <div class="w-10 h-10 bg-mfgv-cyan rounded-lg flex items-center justify-center text-mfgv-deep font-bold text-xl shadow-lg">
@@ -448,7 +509,7 @@
                     </div>
                     
                     <div class="mt-8 text-center text-[10px] text-slate-400">
-                        <p>MFGV CoreSight v6.2 • Algoritmo Auditável • Baseado em Benchmark Brasil 2025</p>
+                        <p>MFGV CoreSight v6.3 • Algoritmo Auditável • Baseado em Benchmark Brasil 2025</p>
                     </div>
 
                 </div>
@@ -709,55 +770,41 @@
             let totalBleedingCost = 0;
             
             state.departments.forEach(dept => {
-                // Ensure values are numbers
                 const salary = dept.salary || 0;
                 const tax = state.data.tax || 1.35;
                 const ben = state.data.ben || 0;
                 
-                // Monthly Cost per Person (Salary * Tax + Benefits)
                 const deptMonthlyLoad = (salary * tax) + ben;
-                // Annual Cost per Person (approx 13.33 salaries)
                 const deptAnnualCost = deptMonthlyLoad * 13.33;
                 
                 const toxicCount = dept.risk.toxic || 0;
                 const contCount = dept.risk.contaminated || 0;
 
-                // Surgery Cost Logic: Toxic * (AnnualCost * 2.5)
-                // Represents: Severance, Recruitment, Ramp-up, Loss of Knowledge
                 const costPerToxic = deptAnnualCost * 2.5; 
                 totalSurgeryCost += toxicCount * costPerToxic;
 
-                // Bleeding Cost Logic: (Toxic + 0.5*Contaminated) * (AnnualCost * 0.30)
-                // Represents: 30% Inefficiency/Productivity Loss
                 const bleedingUnits = toxicCount + (contCount * 0.5);
                 const costPerBleed = deptAnnualCost * 0.30; 
                 totalBleedingCost += bleedingUnits * costPerBleed;
             });
 
             // 2. QUESTIONNAIRE METRICS
-            // Absenteísmo
             const baseAbs = state.ctx === 'AGRO' ? 0.08 : (state.ctx === 'INDUSTRIAL' ? 0.05 : 0.03);
             const absControlMult = getV(AF, 3, 2);
             const costAbs = R.annualPayroll * baseAbs * (absControlMult - 0.5);
 
-            // Silêncio / Medo
             const silenceRate = getV(AF, 6, 2);
             const costSilence = R.annualPayroll * silenceRate;
 
-            // Operational Inefficiency (Meetings/Bureaucracy)
             const meetPct = (AO[4] || 25) / 100;
             const costMeet = R.annualPayroll * 0.30 * meetPct;
 
             const burHours = AO[5] || 4;
             const costBur = (burHours / 40) * R.annualPayroll;
 
-            // Note: We deliberately exclude generic "Turnover" and "Demotivation" formulas 
-            // if we have specific risk data (Surgery/Bleeding) to avoid double counting.
-            // If no risk data is entered, we could fallback, but let's prioritize the Risk Tab as requested.
-            
             // TOTAL TCWL
             const totalTCWL = totalSurgeryCost + totalBleedingCost + costAbs + costSilence + costMeet + costBur;
-            const recovery = totalTCWL * 0.35; // Conservative recovery estimate
+            const recovery = totalTCWL * 0.35; 
 
             // PLAN LOGIC
             let planKey = 'STARTER';
@@ -774,7 +821,7 @@
             const hcroi = (D.rev > 0 && R.annualPayroll > 0) ? (D.rev / R.annualPayroll).toFixed(2) : "0.0";
 
             const lossPct = R.annualPayroll > 0 ? (totalTCWL / R.annualPayroll) : 0;
-            const score = Math.max(0, Math.round(100 - (lossPct * 100 * 2.5))); // Adjusted weighting
+            const score = Math.max(0, Math.round(100 - (lossPct * 100 * 2.5)));
             const status = score > 80 ? 'Saudável' : (score > 50 ? 'Alerta' : 'Crítico');
 
             // --- RENDER RESULTS ---
@@ -859,12 +906,10 @@
 
             state.step = step;
 
-            // Trigger Risk Render if entering Step 4
             if(step === 4) {
                 renderRiskStep();
             }
             
-            // Progress Bar
             const pct = ((step + 1) / 7) * 100;
             const mobBar = document.getElementById('mobile-progress');
             if(mobBar) mobBar.style.width = pct + "%";
@@ -879,7 +924,6 @@
                 el.classList.toggle('text-mfgv-cyan', idx === step);
             });
 
-            // Nav Buttons
             const btnBack = document.querySelector('#nav-footer button:first-child');
             const btnNext = document.querySelector('#nav-footer button:last-child');
             
