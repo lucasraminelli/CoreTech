@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MFGV CoreSight | Diagnóstico Estratégico v6.0</title>
+    <title>MFGV CoreSight | Diagnóstico Estratégico v6.1 Integrated</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -319,14 +319,13 @@
                         <div class="p-2 bg-orange-100 text-orange-600 rounded">
                             <i class="fa-solid fa-triangle-exclamation"></i>
                         </div>
-                        <h2 class="text-2xl font-bold text-slate-900">Análise de Risco</h2>
+                        <h2 class="text-2xl font-bold text-slate-900">Análise de Risco Cultural</h2>
                     </div>
                     
-                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-10 text-center">
-                        <i class="fa-solid fa-person-digging text-4xl text-slate-300 mb-4"></i>
-                        <h3 class="text-lg font-bold text-slate-700">Módulo em Construção</h3>
-                        <p class="text-slate-500 mt-2">Esta funcionalidade será habilitada em breve para avaliação de riscos trabalhistas e de compliance.</p>
-                    </div>
+                    <p class="text-slate-500 mb-6">Quantifique o comportamento da equipe por departamento. Isso afeta diretamente o custo de Turnover e Ineficiência.</p>
+
+                    <div id="risk-cards-container" class="space-y-4">
+                        </div>
                 </div>
 
                 <div id="step-5" class="step-content max-w-4xl mx-auto py-4">
@@ -375,6 +374,23 @@
                             <h3 class="text-2xl font-mono font-bold text-mfgv-deep" id="res-project-roi">0%</h3>
                             <p class="text-[10px] text-slate-400 mt-1">Payback: <span id="res-payback">0</span> meses</p>
                         </div>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white p-6 rounded-2xl mb-8 shadow-lg">
+                        <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-scale-balanced"></i> O Dilema: Resolver vs Ignorar</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-white/10 p-4 rounded-xl border border-white/10 backdrop-blur-sm">
+                                <p class="text-xs uppercase font-bold text-blue-100 mb-1">💉 Custo da Cirurgia (Saída)</p>
+                                <h4 class="text-2xl font-mono font-bold" id="res-surgery-cost">R$ 0</h4>
+                                <p class="text-[10px] text-blue-200 mt-2">Custo de rescisão e reposição de colaboradores tóxicos.</p>
+                            </div>
+                            <div class="bg-red-500/20 p-4 rounded-xl border border-red-500/30 backdrop-blur-sm">
+                                <p class="text-xs uppercase font-bold text-red-100 mb-1">🩸 Custo da Sangria (Ineficiência)</p>
+                                <h4 class="text-2xl font-mono font-bold text-red-50" id="res-bleeding-cost">R$ 0</h4>
+                                <p class="text-[10px] text-red-100 mt-2">Custo anual de manter a equipe contaminada e improdutiva.</p>
+                            </div>
+                        </div>
+                        <p class="text-center text-sm mt-4 font-medium opacity-90" id="res-insight-text">Analisando...</p>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8 print-break">
@@ -432,7 +448,7 @@
                     </div>
                     
                     <div class="mt-8 text-center text-[10px] text-slate-400">
-                        <p>MFGV CoreSight v6.0 • Algoritmo Auditável • Baseado em Benchmark Brasil 2025</p>
+                        <p>MFGV CoreSight v6.1 • Algoritmo Auditável • Baseado em Benchmark Brasil 2025</p>
                     </div>
 
                 </div>
@@ -455,7 +471,7 @@
                 FIN: [
                     { id: 'q1', text: 'Taxa de Turnover Anual Estimada', opts: ['>30% (Crítico)', '20-30%', '10-20%', '5-10%', '<5% (Excelente)'], vals: [0.35, 0.225, 0.115, 0.065, 0.03] },
                     { id: 'q2', text: 'Plano de Sucessão Formalizado', opts: ['Inexistente', 'Informal', 'Parcial', 'Estruturado', 'Completo'], vals: [1.15, 1.15, 1.05, 1.02, 1.0] },
-                    { id: 'q3', text: 'Você sabe o Custo de Substituição?', opts: ['Não tenho ideia', 'Vaga noção', 'Parcial', 'Calculado', 'Preciso'], vals: [1,1,1,1,1] }, // Impact awareness
+                    { id: 'q3', text: 'Você sabe o Custo de Substituição?', opts: ['Não tenho ideia', 'Vaga noção', 'Parcial', 'Calculado', 'Preciso'], vals: [1,1,1,1,1] }, 
                     { id: 'q4', text: 'Controle de Absenteísmo', opts: ['Nenhum', 'Manual', 'Básico', 'Sistêmico', 'Preditivo'], vals: [1.8, 1.5, 1.2, 1.0, 0.7] },
                     { id: 'q5', text: 'Integração RH x Finanças', opts: ['Silos', 'Planilha', 'Parcial', 'Integrado', 'Tempo Real'], vals: [1.2, 1.15, 1.1, 1.05, 1.0] },
                     { id: 'q6', text: 'Cálculo de ROI em Treinamentos', opts: ['Nunca', 'Raramente', 'Às vezes', 'Sempre', 'Automático'], vals: [0.25, 0.18, 0.10, 0.03, 0.01] },
@@ -481,8 +497,8 @@
             step: 0,
             ctx: null,
             data: { emp: 0, sal: 0, ben: 800, tax: 1.35, rev: 0, multi: false },
-            departments: [], // Array to store departments
-            ans: { fin: [], ops: [] }, // Stores indices or values
+            departments: [], 
+            ans: { fin: [], ops: [] }, 
             res: {}
         };
 
@@ -528,15 +544,7 @@
             }).join('');
         }
 
-        // === LOGIC HANDLERS ===
-        window.setContext = (ctx, btn) => {
-            state.ctx = ctx;
-            document.querySelectorAll('.ctx-btn').forEach(b => b.classList.remove('border-mfgv-deep', 'bg-blue-50/30'));
-            btn.classList.add('border-mfgv-deep', 'bg-blue-50/30');
-            setTimeout(() => jumpTo(1), 300);
-        }
-
-        // === DEPARTMENT MANAGEMENT LOGIC (From Integrated) ===
+        // === DEPARTMENT MANAGEMENT ===
         window.addDepartment = () => {
             const name = document.getElementById('dept-name').value.trim();
             const count = parseInt(document.getElementById('dept-count').value);
@@ -547,9 +555,9 @@
                 return;
             }
 
-            state.departments.push({ id: Date.now(), name, count, salary, total: count * salary });
+            // Init with 0 risk
+            state.departments.push({ id: Date.now(), name, count, salary, total: count * salary, risk: { toxic: 0, contaminated: 0 } });
             
-            // Clear inputs
             document.getElementById('dept-name').value = '';
             document.getElementById('dept-count').value = '';
             document.getElementById('dept-salary').value = '';
@@ -584,6 +592,59 @@
             `).join('');
         }
 
+        // === RISK MANAGEMENT LOGIC (STEP 5) ===
+        window.renderRiskStep = () => {
+            const container = document.getElementById('risk-cards-container');
+            if(state.departments.length === 0) {
+                container.innerHTML = '<div class="p-4 bg-yellow-50 text-yellow-600 rounded">Adicione departamentos na etapa "Estrutura" primeiro.</div>';
+                return;
+            }
+
+            container.innerHTML = state.departments.map(dept => `
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-4 border-b border-slate-50 pb-2">
+                        <h4 class="font-bold text-mfgv-deep">${dept.name}</h4>
+                        <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">Total: ${dept.count} pessoas</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] font-bold text-red-500 uppercase block mb-1">Colaboradores Tóxicos</label>
+                            <input type="number" min="0" max="${dept.count}" 
+                                value="${dept.risk.toxic || 0}"
+                                onchange="updateRisk(${dept.id}, 'toxic', this.value)"
+                                class="w-full border border-red-200 focus:border-red-500 rounded px-3 py-2 text-sm font-bold text-red-600 outline-none">
+                            <p class="text-[10px] text-slate-400 mt-1">Sabotadores ativos</p>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-orange-400 uppercase block mb-1">Colaboradores Contaminados</label>
+                            <input type="number" min="0" max="${dept.count}" 
+                                value="${dept.risk.contaminated || 0}"
+                                onchange="updateRisk(${dept.id}, 'cont', this.value)"
+                                class="w-full border border-orange-200 focus:border-orange-500 rounded px-3 py-2 text-sm font-bold text-orange-600 outline-none">
+                            <p class="text-[10px] text-slate-400 mt-1">Baixo engajamento</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.updateRisk = (id, type, val) => {
+            const dept = state.departments.find(d => d.id === id);
+            if(dept) {
+                const num = parseInt(val) || 0;
+                if(type === 'toxic') dept.risk.toxic = num;
+                if(type === 'cont') dept.risk.contaminated = num;
+            }
+        }
+
+        // === GENERAL LOGIC ===
+        window.setContext = (ctx, btn) => {
+            state.ctx = ctx;
+            document.querySelectorAll('.ctx-btn').forEach(b => b.classList.remove('border-mfgv-deep', 'bg-blue-50/30'));
+            btn.classList.add('border-mfgv-deep', 'bg-blue-50/30');
+            setTimeout(() => jumpTo(1), 300);
+        }
+
         window.setAns = (type, qIdx, val, btn) => {
             state.ans[type][qIdx] = val;
             if(btn) {
@@ -594,31 +655,25 @@
         }
 
         window.updateState = () => {
-            // Aggregate Departments Data
             let totalEmp = 0;
             let totalMonthlyPayroll = 0;
 
             if (state.departments.length > 0) {
                 state.departments.forEach(d => {
                     totalEmp += d.count;
-                    totalMonthlyPayroll += d.total; // count * salary
+                    totalMonthlyPayroll += d.total;
                 });
                 state.data.emp = totalEmp;
-                // Weighted Average Salary
                 state.data.sal = totalEmp > 0 ? (totalMonthlyPayroll / totalEmp) : 0;
             } else {
                 state.data.emp = 0;
                 state.data.sal = 0;
             }
             
-            // Update Visuals for Departments
             document.getElementById('total-employees-display').innerText = totalEmp;
             document.getElementById('avg-salary-display').innerText = formatMoney(state.data.sal);
-
-            // Propagate to inputs (read-only in Step 2)
             document.getElementById('inp-salary').value = state.data.sal.toFixed(2);
 
-            // Other global inputs
             state.data.ben = parseFloat(document.getElementById('inp-benefits').value) || 0;
             state.data.tax = parseFloat(document.getElementById('inp-tax').value);
             state.data.multi = document.getElementById('inp-multisite').checked;
@@ -626,9 +681,6 @@
             const revStr = document.getElementById('inp-revenue').value.replace(/\./g, '').replace(',', '.');
             state.data.rev = parseFloat(revStr) || 0;
 
-            // Calc TCO
-            // Formula: (Salary * Tax) + Benefits
-            // Annual: Monthly * 13.33 (approx for 13th + Vacation + 1/3)
             const monthlyLoad = (state.data.sal * state.data.tax) + state.data.ben;
             const annualPayroll = monthlyLoad * 13.33 * state.data.emp;
 
@@ -649,58 +701,71 @@
             const AF = state.ans.fin;
             const AO = state.ans.ops;
 
-            // Defaults if not answered (Middle value)
-            const getV = (arr, idx, defIdx) => {
-                const valIdx = arr[idx] !== undefined ? arr[idx] : defIdx;
-                return QF[idx].vals[valIdx];
-            }
-            const getOV = (idx, defIdx) => {
-                const valIdx = AO[idx] !== undefined ? AO[idx] : defIdx;
-                return QO[idx].vals[valIdx];
-            }
+            const getV = (arr, idx, defIdx) => QF[idx].vals[arr[idx] !== undefined ? arr[idx] : defIdx];
+            const getOV = (idx, defIdx) => QO[idx].vals[AO[idx] !== undefined ? AO[idx] : defIdx];
 
-            // 1. Turnover Cost
+            // --- CALCULATIONS FROM QUESTIONNAIRE ---
             const turnoverRate = getV(AF, 0, 2); 
             const successionFactor = getV(AF, 1, 2);
-            const costTurnover = (D.emp * turnoverRate) * (R.monthlyLoad * 1.5) * successionFactor;
+            // We reduce the weight of generic turnover if we have specific risk data later, but kept for base
+            let costTurnover = (D.emp * turnoverRate) * (R.monthlyLoad * 1.5) * successionFactor; 
 
-            // 2. Absenteeism
             const baseAbs = state.ctx === 'AGRO' ? 0.08 : (state.ctx === 'INDUSTRIAL' ? 0.05 : 0.03);
             const absControlMult = getV(AF, 3, 2);
             const costAbs = R.annualPayroll * baseAbs * (absControlMult - 0.5);
 
-            // 3. Silence / Trust Tax
             const silenceRate = getV(AF, 6, 2);
             const costSilence = R.annualPayroll * silenceRate;
 
-            // 4. Blind Investment (ROI Missing)
             const wasteRate = getV(AF, 5, 2);
             const costBlind = (R.annualPayroll * 0.03) * wasteRate;
 
-            // 5. Demotivation
             const recogRate = getOV(1, 2);
             const leadFactor = getOV(0, 2);
             const costDemotivation = R.annualPayroll * recogRate * leadFactor;
 
-            // 6. Mental Health
             const healthRate = getOV(2, 2);
             const costHealth = R.annualPayroll * healthRate;
 
-            // 7. Onboarding Loss
             const newHires = D.emp * turnoverRate;
             const onboardMonths = getOV(3, 2);
             const costOnboard = newHires * (R.monthlyLoad) * (onboardMonths) * 0.5;
 
-            // 8. Meetings
             const meetPct = (AO[4] || 25) / 100;
             const costMeet = R.annualPayroll * 0.30 * meetPct;
 
-            // 9. Bureaucracy
             const burHours = AO[5] || 4;
             const costBur = (burHours / 40) * R.annualPayroll;
 
+            // --- CALCULATIONS FROM RISK STEP (BACKEND INTEGRATION) ---
+            let totalSurgeryCost = 0;
+            let totalBleedingCost = 0;
+            
+            state.departments.forEach(dept => {
+                // Determine Cost Per Person for this Dept
+                // Logic: (Avg Salary * Tax) + Benefits
+                const deptMonthlyLoad = (dept.salary * state.data.tax) + state.data.ben;
+                
+                // Surgery Cost (Toxic)
+                // Logic: Cost to replace = 2.5x Annual Salary (Severance + Hire + Ramp-up)
+                // Using 2.5x monthly load * 13.33 approx
+                const toxicCount = dept.risk.toxic || 0;
+                const costPerToxic = deptMonthlyLoad * 12 * 1.5; // Conservative multiplier for replacement
+                totalSurgeryCost += toxicCount * costPerToxic;
+
+                // Bleeding Cost (Contaminated)
+                // Logic: 30% inefficiency per year
+                const contCount = dept.risk.contaminated || 0;
+                const costPerCont = deptMonthlyLoad * 12 * 0.30; 
+                totalBleedingCost += contCount * costPerCont;
+            });
+
+            // Adjust generic costs if specific risk data is present to avoid double counting
+            if(totalSurgeryCost > 0) costTurnover = costTurnover * 0.5; // Reduce generic turnover est
+            if(totalBleedingCost > 0) costDemotivation = costDemotivation * 0.2; // Reduce generic demotivation est
+
             // TOTALS
-            const totalTCWL = costTurnover + costAbs + costSilence + costBlind + costDemotivation + costHealth + costOnboard + costMeet + costBur;
+            const totalTCWL = costTurnover + costAbs + costSilence + costBlind + costDemotivation + costHealth + costOnboard + costMeet + costBur + totalSurgeryCost + totalBleedingCost;
             const recovery = totalTCWL * 0.30;
 
             // PLAN LOGIC
@@ -709,22 +774,19 @@
             if (D.emp > 500) planKey = 'ENTERPRISE';
             if (state.ctx === 'INDUSTRIAL' && D.emp > 120) planKey = 'GROWTH';
             if (D.multi && planKey === 'STARTER') planKey = 'GROWTH';
-            if (state.ctx === 'AGRO' && D.multi) planKey = 'ENTERPRISE';
-
+            
             const plan = CONFIG.PLANS[planKey];
             const avgInv = (plan.minPrice + plan.maxPrice) / 2 * 12 * 1000;
             const roi = ((recovery - avgInv) / avgInv) * 100;
             const payback = (avgInv / (recovery/12));
 
-            // HC ROI
             const hcroi = D.rev > 0 ? (D.rev / R.annualPayroll).toFixed(2) : "0.0";
 
-            // Score (Inverse of loss % of payroll)
             const lossPct = totalTCWL / R.annualPayroll;
             const score = Math.max(0, Math.round(100 - (lossPct * 100 * 2)));
             const status = score > 80 ? 'Saudável' : (score > 50 ? 'Alerta' : 'Crítico');
 
-            // Render Results
+            // --- RENDER RESULTS ---
             document.getElementById('res-company').innerText = document.getElementById('inp-company').value || 'Sua Empresa';
             document.getElementById('res-score').innerText = score + "/100";
             document.getElementById('res-status').innerText = status;
@@ -737,6 +799,16 @@
             document.getElementById('res-project-roi').innerText = Math.round(roi) + "%";
             document.getElementById('res-payback').innerText = payback.toFixed(1);
 
+            // DILEMMA BOX
+            document.getElementById('res-surgery-cost').innerText = formatMoney(totalSurgeryCost);
+            document.getElementById('res-bleeding-cost').innerText = formatMoney(totalBleedingCost);
+            
+            const percentDiff = totalBleedingCost > 0 ? ((totalBleedingCost - totalSurgeryCost) / totalBleedingCost * 100) : 0;
+            const insightText = totalBleedingCost > totalSurgeryCost 
+                ? `💡 INSIGHT: Manter o problema custa ${Math.abs(percentDiff).toFixed(0)}% a mais do que a solução definitiva (Cirurgia).`
+                : `💡 INSIGHT: A solução radical é mais custosa agora. Foque em recuperação (Sangria).`;
+            document.getElementById('res-insight-text').innerText = insightText;
+
             // Plan UI
             document.getElementById('plan-name').innerText = plan.name;
             document.getElementById('plan-desc').innerText = plan.desc;
@@ -746,10 +818,11 @@
 
             // Table
             const rows = [
-                { l: 'Turnover & Onboarding', v: costTurnover + costOnboard },
+                { l: 'Risco Cultural (Tóxicos/Contaminados)', v: totalSurgeryCost + totalBleedingCost },
+                { l: 'Turnover & Onboarding (Natural)', v: costTurnover + costOnboard },
                 { l: 'Absenteísmo & Saúde', v: costAbs + costHealth },
-                { l: 'Ineficiência Operacional (Reuniões/Bur.)', v: costMeet + costBur },
-                { l: 'Cultural (Silêncio/Desmotivação)', v: costSilence + costDemotivation }
+                { l: 'Ineficiência (Reuniões/Burocracia)', v: costMeet + costBur },
+                { l: 'Silêncio & Desmotivação', v: costSilence + costDemotivation }
             ].sort((a,b) => b.v - a.v);
 
             document.getElementById('table-body').innerHTML = rows.map(r => `
@@ -769,7 +842,7 @@
                     labels: rows.map(r => r.l),
                     datasets: [{
                         data: rows.map(r => r.v),
-                        backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#64748b'],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#64748b'],
                         borderWidth: 0
                     }]
                 },
@@ -786,18 +859,19 @@
             
             document.querySelector('.step-content.active').classList.remove('active');
             
-            // Check existence of step before accessing classList
             const nextStep = document.getElementById(`step-${step}`);
             if(nextStep) {
                 nextStep.classList.add('active');
-            } else {
-                console.error("Step not found:", step);
-                return;
             }
 
             state.step = step;
+
+            // Trigger Risk Render if entering Step 4 (Index 4 is Step 5 UI)
+            if(step === 4) {
+                renderRiskStep();
+            }
             
-            // Progress Bar (UPDATED FOR 7 STEPS)
+            // Progress Bar
             const pct = ((step + 1) / 7) * 100;
             const mobBar = document.getElementById('mobile-progress');
             if(mobBar) mobBar.style.width = pct + "%";
@@ -805,7 +879,7 @@
             if(mobCount) mobCount.innerText = (step+1) + "/7";
             
             const marker = document.getElementById('progress-marker');
-            if(marker) marker.style.transform = `translateY(${step * 24}px)`; // Approx spacing
+            if(marker) marker.style.transform = `translateY(${step * 24}px)`;
             
             document.querySelectorAll('.step-link').forEach((el, idx) => {
                 el.style.opacity = idx === step ? '1' : '0.5';
@@ -819,7 +893,6 @@
             btnBack.style.opacity = step === 0 ? '0' : '1';
             btnBack.style.pointerEvents = step === 0 ? 'none' : 'auto';
 
-            // UPDATED: Print button logic for new final step (6)
             if(step === 6) {
                 btnNext.innerHTML = '<i class="fa-solid fa-print"></i> Imprimir';
                 btnNext.onclick = () => window.print();
@@ -828,7 +901,6 @@
                 btnNext.onclick = () => jumpTo(step + 1);
             }
 
-            // UPDATED: Run diagnostics trigger
             if(step === 6) runDiagnostics();
         }
 
